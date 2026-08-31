@@ -1,0 +1,129 @@
+:root {
+
+  /* =====================================================
+     DRONAID COMMON THEME
+     ===================================================== */
+
+  /* ================= BACKGROUND ================= */
+
+  --bg-main: #03030b;
+  --bg-primary: #050511;
+  --bg-secondary: #08081a;
+  --bg-card: #080817;
+  --bg-card-hover: #0d0d22;
+  --bg-input: #09091a;
+
+  /* ================= BRAND ================= */
+
+  --primary: #6424ff;
+  --primary-light: #7b3cff;
+  --primary-dark: #4814c7;
+
+  --purple: #8b2cff;
+  --purple-light: #a855f7;
+
+  --cyan: #00d9ff;
+  --cyan-light: #38e8ff;
+
+  --yellow: #f4e600;
+
+  /* ================= TEXT ================= */
+
+  --text-primary: #ffffff;
+  --text-secondary: #c1bfd1;
+  --text-muted: #817e96;
+  --text-disabled: #55536a;
+
+  /* ================= BORDERS ================= */
+
+  --border: rgba(123, 60, 255, 0.45);
+  --border-light: rgba(123, 60, 255, 0.25);
+  --border-strong: rgba(123, 60, 255, 0.75);
+
+  /* ================= STATUS ================= */
+
+  --success: #20d68a;
+  --warning: #f4c542;
+  --danger: #ff4565;
+  --info: #00d9ff;
+
+  /* ================= JIRA STATUS ================= */
+
+  --status-todo: #817e96;
+  --status-progress: #8b4dff;
+  --status-review: #00c8ee;
+  --status-done: #20d68a;
+  --status-blocked: #ff4565;
+
+  /* ================= PRIORITY ================= */
+
+  --priority-urgent: #ff365f;
+  --priority-high: #ff7a3d;
+  --priority-medium: #f4c542;
+  --priority-low: #38a3ff;
+
+  /* ================= SPACING ================= */
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* ================= BORDER RADIUS ================= */
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-round: 50%;
+
+  /* ================= FONT ================= */
+
+  --font-family:
+    Inter,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
+
+  --font-xs: 11px;
+  --font-sm: 13px;
+  --font-md: 15px;
+  --font-lg: 18px;
+  --font-xl: 24px;
+  --font-2xl: 32px;
+
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* ================= SHADOWS ================= */
+
+  --shadow-card:
+    0 0 30px rgba(100, 36, 255, 0.08);
+
+  --shadow-purple:
+    0 0 25px rgba(100, 36, 255, 0.30);
+
+  --shadow-button:
+    0 8px 25px rgba(100, 36, 255, 0.35);
+
+  --shadow-input:
+    0 0 18px rgba(100, 36, 255, 0.10);
+
+  /* ================= TRANSITIONS ================= */
+
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 400ms ease;
+
+  /* ================= LAYOUT ================= */
+
+  --navbar-height: 82px;
+  --sidebar-width: 250px;
+  --content-max-width: 1400px;
+}
