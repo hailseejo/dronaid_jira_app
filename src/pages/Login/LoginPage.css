@@ -1,0 +1,831 @@
+/* =====================================================
+   DRONAID LOGIN PAGE
+   ===================================================== */
+
+.login-page {
+  position: relative;
+
+  width: 100%;
+  min-height: 100vh;
+
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(100, 36, 255, 0.08),
+      transparent 42%
+    ),
+    var(--bg-main);
+
+  color: var(--text-primary);
+
+  font-family: var(--font-family);
+}
+
+
+/* =====================================================
+   HUD GRID
+   ===================================================== */
+
+.hud-grid {
+  position: absolute;
+  inset: 0;
+
+  opacity: 0.25;
+
+  background-image:
+    linear-gradient(
+      rgba(100, 36, 255, 0.13) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(100, 36, 255, 0.13) 1px,
+      transparent 1px
+    );
+
+  background-size: 42px 42px;
+
+  mask-image:
+    radial-gradient(
+      ellipse at center,
+      black 0%,
+      transparent 78%
+    );
+
+  pointer-events: none;
+}
+
+
+/* =====================================================
+   OUTER BORDER
+   ===================================================== */
+
+.login-page::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 22px;
+
+  border: 1px solid var(--border);
+
+  border-radius: var(--radius-lg);
+
+  box-shadow:
+    0 0 25px rgba(100, 36, 255, 0.08),
+    inset 0 0 25px rgba(100, 36, 255, 0.03);
+
+  pointer-events: none;
+}
+
+
+/* =====================================================
+   CORNER HUD
+   ===================================================== */
+
+.hud-corner {
+  position: absolute;
+
+  width: 65px;
+  height: 65px;
+
+  border-color: var(--primary-light);
+
+  opacity: 0.7;
+
+  pointer-events: none;
+}
+
+.hud-corner-tl {
+  top: 45px;
+  left: 45px;
+
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+
+.hud-corner-tr {
+  top: 45px;
+  right: 45px;
+
+  border-top: 1px solid;
+  border-right: 1px solid;
+}
+
+.hud-corner-bl {
+  bottom: 45px;
+  left: 45px;
+
+  border-bottom: 1px solid;
+  border-left: 1px solid;
+}
+
+.hud-corner-br {
+  bottom: 45px;
+  right: 45px;
+
+  border-bottom: 1px solid;
+  border-right: 1px solid;
+}
+
+
+/* =====================================================
+   CROSS MARKERS
+   ===================================================== */
+
+.hud-cross {
+  position: absolute;
+
+  color: var(--primary-light);
+
+  font-size: 28px;
+  font-weight: 300;
+
+  opacity: 0.7;
+}
+
+.cross-1 {
+  top: 85px;
+  left: 15%;
+}
+
+.cross-2 {
+  top: 100px;
+  right: 16%;
+}
+
+.cross-3 {
+  bottom: 22%;
+  left: 20%;
+}
+
+.cross-4 {
+  bottom: 28%;
+  right: 18%;
+}
+
+
+/* =====================================================
+   HUD INFORMATION
+   ===================================================== */
+
+.login-hud {
+  position: absolute;
+
+  color: rgba(139, 77, 255, 0.65);
+
+  font-size: 11px;
+
+  letter-spacing: 1px;
+
+  line-height: 1.8;
+
+  z-index: 2;
+}
+
+.login-hud p {
+  margin: 0;
+}
+
+.login-hud span {
+  color: var(--cyan);
+}
+
+.login-hud-left {
+  left: 5%;
+
+  top: 25%;
+}
+
+.login-hud-right {
+  right: 5%;
+
+  top: 48%;
+}
+
+.login-hud-bottom-left {
+  left: 5%;
+
+  bottom: 17%;
+}
+
+
+/* =====================================================
+   DECORATIVE DRONE
+   ===================================================== */
+
+.drone-decoration {
+  position: absolute;
+
+  width: 650px;
+  height: 350px;
+
+  left: 50%;
+
+  top: 50%;
+
+  transform:
+    translate(-50%, -50%)
+    scale(1.3);
+
+  opacity: 0.16;
+
+  z-index: 0;
+
+  pointer-events: none;
+}
+
+
+/* Drone central body */
+
+.drone-body {
+  position: absolute;
+
+  width: 120px;
+  height: 70px;
+
+  left: 265px;
+  top: 140px;
+
+  border: 2px solid var(--primary-light);
+
+  border-radius: 25px;
+
+  transform: perspective(200px) rotateX(20deg);
+
+  box-shadow:
+    0 0 20px rgba(100, 36, 255, 0.4);
+}
+
+
+/* Drone arms */
+
+.drone-arm {
+  position: absolute;
+
+  height: 3px;
+
+  background: var(--primary-light);
+
+  transform-origin: left center;
+}
+
+.drone-arm-left {
+  width: 260px;
+
+  left: 315px;
+  top: 155px;
+
+  transform: rotate(190deg);
+}
+
+.drone-arm-right {
+  width: 260px;
+
+  left: 335px;
+  top: 155px;
+
+  transform: rotate(-10deg);
+}
+
+
+/* Motors */
+
+.drone-motor {
+  position: absolute;
+
+  width: 45px;
+  height: 45px;
+
+  border: 2px solid var(--purple-light);
+
+  border-radius: 50%;
+}
+
+.motor-1 {
+  left: 60px;
+  top: 100px;
+}
+
+.motor-2 {
+  left: 60px;
+  top: 220px;
+}
+
+.motor-3 {
+  right: 60px;
+  top: 100px;
+}
+
+.motor-4 {
+  right: 60px;
+  top: 220px;
+}
+
+
+/* Propellers */
+
+.drone-prop {
+  position: absolute;
+
+  width: 100px;
+  height: 3px;
+
+  background: var(--cyan);
+
+  border-radius: 50%;
+}
+
+.prop-1 {
+  left: 33px;
+  top: 120px;
+  transform: rotate(-10deg);
+}
+
+.prop-2 {
+  left: 33px;
+  top: 240px;
+  transform: rotate(10deg);
+}
+
+.prop-3 {
+  right: 33px;
+  top: 120px;
+  transform: rotate(10deg);
+}
+
+.prop-4 {
+  right: 33px;
+  top: 240px;
+  transform: rotate(-10deg);
+}
+
+
+/* =====================================================
+   LOGIN CARD
+   ===================================================== */
+
+.login-card {
+  position: relative;
+
+  z-index: 5;
+
+  width: 530px;
+
+  min-height: 695px;
+
+  padding: 50px 45px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(8, 8, 23, 0.98),
+      rgba(3, 3, 11, 0.98)
+    );
+
+  border: 1px solid var(--border-strong);
+
+  border-radius: var(--radius-xl);
+
+  box-shadow:
+    0 0 45px rgba(100, 36, 255, 0.16),
+    inset 0 0 35px rgba(100, 36, 255, 0.025);
+
+  backdrop-filter: blur(15px);
+}
+
+
+/* =====================================================
+   LOGO
+   ===================================================== */
+
+.login-logo-container {
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+
+  margin-bottom: 35px;
+}
+
+.login-logo {
+  width: 280px;
+
+  max-height: 110px;
+
+  object-fit: contain;
+
+  display: block;
+
+  filter:
+    drop-shadow(0 0 10px rgba(0, 217, 255, 0.2));
+}
+
+
+/* =====================================================
+   HEADING
+   ===================================================== */
+
+.login-heading {
+  margin-bottom: 38px;
+}
+
+.login-heading h1 {
+  margin: 0;
+
+  font-size: 31px;
+
+  font-weight: var(--weight-bold);
+
+  color: var(--text-primary);
+
+  letter-spacing: -0.5px;
+}
+
+.login-heading p {
+  margin-top: 5px;
+
+  font-size: var(--font-lg);
+
+  color: var(--text-secondary);
+}
+
+
+/* =====================================================
+   FORM
+   ===================================================== */
+
+.login-form {
+  width: 100%;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: var(--text-primary);
+
+  font-size: var(--font-md);
+
+  font-weight: var(--weight-medium);
+}
+
+
+/* =====================================================
+   INPUT
+   ===================================================== */
+
+.input-wrapper {
+  position: relative;
+
+  width: 100%;
+}
+
+.input-wrapper input {
+  width: 100%;
+
+  height: 58px;
+
+  padding:
+    0 50px;
+
+  background: rgba(9, 9, 26, 0.75);
+
+  border: 1px solid var(--border-light);
+
+  border-radius: var(--radius-md);
+
+  color: var(--text-primary);
+
+  font-size: var(--font-md);
+
+  transition:
+    border-color var(--transition-normal),
+    box-shadow var(--transition-normal),
+    background var(--transition-normal);
+}
+
+.input-wrapper input::placeholder {
+  color: var(--text-muted);
+}
+
+.input-wrapper input:hover {
+  border-color: var(--border);
+}
+
+.input-wrapper input:focus {
+  border-color: var(--primary-light);
+
+  background: rgba(9, 9, 26, 0.95);
+
+  box-shadow:
+    0 0 18px rgba(100, 36, 255, 0.12);
+}
+
+
+/* Input icon */
+
+.input-icon {
+  position: absolute;
+
+  left: 18px;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  width: 22px;
+  height: 22px;
+
+  color: var(--text-secondary);
+
+  z-index: 2;
+}
+
+.input-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+
+/* =====================================================
+   PASSWORD TOGGLE
+   ===================================================== */
+
+.password-toggle {
+  position: absolute;
+
+  right: 16px;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+
+  background: transparent;
+
+  color: var(--text-secondary);
+
+  font-size: 22px;
+
+  cursor: pointer;
+
+  transition: color var(--transition-fast);
+}
+
+.password-toggle:hover {
+  color: var(--cyan);
+}
+
+
+/* =====================================================
+   OPTIONS
+   ===================================================== */
+
+.login-options {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin-top: -4px;
+
+  margin-bottom: 32px;
+}
+
+
+/* Remember me */
+
+.remember-me {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  color: var(--text-secondary);
+
+  font-size: var(--font-md);
+
+  cursor: pointer;
+}
+
+.remember-me input {
+  position: absolute;
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+.custom-checkbox {
+  width: 23px;
+  height: 23px;
+
+  border: 1px solid var(--border-strong);
+
+  border-radius: 5px;
+
+  background: transparent;
+
+  transition:
+    background var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.remember-me input:checked + .custom-checkbox {
+  background: var(--primary);
+
+  box-shadow:
+    0 0 12px rgba(100, 36, 255, 0.4);
+}
+
+.remember-me input:checked + .custom-checkbox::after {
+  content: "✓";
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  height: 100%;
+
+  color: white;
+
+  font-size: 15px;
+}
+
+
+/* Forgot password */
+
+.forgot-password {
+  border: none;
+
+  background: transparent;
+
+  color: var(--yellow);
+
+  font-size: var(--font-md);
+
+  cursor: pointer;
+
+  transition:
+    color var(--transition-fast);
+}
+
+.forgot-password:hover {
+  color: #fff;
+}
+
+
+/* =====================================================
+   SIGN IN BUTTON
+   ===================================================== */
+
+.sign-in-button {
+  width: 100%;
+
+  height: 60px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  position: relative;
+
+  border: none;
+
+  border-radius: var(--radius-md);
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--primary-dark),
+      var(--primary),
+      var(--primary-light)
+    );
+
+  color: white;
+
+  font-size: 16px;
+
+  font-weight: var(--weight-semibold);
+
+  letter-spacing: 0.5px;
+
+  cursor: pointer;
+
+  box-shadow: var(--shadow-button);
+
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-normal),
+    filter var(--transition-normal);
+}
+
+.sign-in-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 12px 35px rgba(100, 36, 255, 0.45);
+
+  filter: brightness(1.08);
+}
+
+.sign-in-button:active {
+  transform: translateY(0);
+}
+
+.sign-in-button .arrow {
+  position: absolute;
+
+  right: 22px;
+
+  font-size: 28px;
+
+  font-weight: 300;
+
+  line-height: 1;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 900px) {
+
+  .login-hud {
+    display: none;
+  }
+
+  .drone-decoration {
+    opacity: 0.07;
+
+    transform:
+      translate(-50%, -50%)
+      scale(0.9);
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .login-page::before {
+    inset: 10px;
+  }
+
+  .login-card {
+    width: calc(100% - 40px);
+
+    min-height: auto;
+
+    padding: 35px 25px;
+  }
+
+  .login-logo {
+    width: 220px;
+  }
+
+  .login-heading h1 {
+    font-size: 27px;
+  }
+
+  .login-heading p {
+    font-size: var(--font-md);
+  }
+
+  .login-options {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 15px;
+  }
+
+}
