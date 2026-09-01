@@ -126,4 +126,16 @@
   --navbar-height: 82px;
   --sidebar-width: 250px;
   --content-max-width: 1400px;
+  /* =========================================================
+   ADD THIS BLOCK TO THE :root {} IN variables.css
+   Aliases so components.css (Person 1C) resolves correctly
+   against the real theme tokens.
+   ========================================================= */
+
+--purple-primary: var(--primary);
+--purple-secondary: var(--purple);
+--cyan-primary: var(--cyan);
+--border-color: var(--border);
+--border-hover: var(--border-strong);
+--bg-hover: var(--bg-card-hover);
 }
