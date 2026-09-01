@@ -1,0 +1,251 @@
+/* =========================================
+   DRONAID SIDEBAR
+   Person 2 - App Layout
+   ========================================= */
+
+.sidebar {
+  width: var(--sidebar-width);
+  height: calc(100vh - var(--navbar-height));
+
+  position: fixed;
+  left: 0;
+  top: var(--navbar-height);
+
+  display: flex;
+  flex-direction: column;
+
+  background: var(--bg-secondary);
+
+  border-right: 1px solid var(--border);
+
+  padding: var(--space-lg) var(--space-md);
+
+  overflow-y: auto;
+}
+
+
+/* =========================================
+   LOGO
+   ========================================= */
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+
+  gap: var(--space-sm);
+
+  padding: var(--space-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.sidebar-logo-icon {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: var(--radius-md);
+
+  background: var(--primary);
+
+  color: var(--text-primary);
+
+  font-size: var(--font-lg);
+  font-weight: var(--weight-bold);
+
+  box-shadow: var(--shadow-purple);
+}
+
+.sidebar-logo h2 {
+  margin: 0;
+
+  color: var(--text-primary);
+
+  font-size: var(--font-md);
+  font-weight: var(--weight-bold);
+
+  letter-spacing: 1px;
+}
+
+.sidebar-logo p {
+  margin: 2px 0 0;
+
+  color: var(--text-muted);
+
+  font-size: var(--font-xs);
+}
+
+
+/* =========================================
+   NAVIGATION
+   ========================================= */
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.sidebar-title {
+  margin: 0 0 var(--space-sm);
+
+  padding: 0 var(--space-sm);
+
+  color: var(--text-muted);
+
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+
+  letter-spacing: 1px;
+}
+
+
+/* =========================================
+   SIDEBAR LINKS
+   ========================================= */
+
+.sidebar-link {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: var(--space-md);
+
+  padding: 11px 12px;
+
+  border-radius: var(--radius-md);
+
+  color: var(--text-secondary);
+
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+
+  text-decoration: none;
+
+  transition:
+    background var(--transition-normal),
+    color var(--transition-normal),
+    border-color var(--transition-normal);
+
+  border: 1px solid transparent;
+}
+
+
+/* Hover */
+
+.sidebar-link:hover {
+  background: var(--bg-card-hover);
+
+  color: var(--text-primary);
+
+  border-color: var(--border-light);
+}
+
+
+/* Active */
+
+.sidebar-link.active {
+  background: rgba(100, 36, 255, 0.15);
+
+  color: var(--primary-light);
+
+  border-color: var(--border-light);
+
+  box-shadow: 0 0 15px rgba(100, 36, 255, 0.08);
+}
+
+
+/* =========================================
+   ICON
+   ========================================= */
+
+.sidebar-icon {
+  width: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 17px;
+
+  flex-shrink: 0;
+}
+
+
+/* =========================================
+   BOTTOM SECTION
+   ========================================= */
+
+.sidebar-bottom {
+  margin-top: auto;
+
+  padding-top: var(--space-lg);
+
+  border-top: 1px solid var(--border-light);
+}
+
+
+/* =========================================
+   SCROLLBAR
+   ========================================= */
+
+.sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 700px) {
+
+  .sidebar {
+    width: 70px;
+
+    padding: var(--space-md) var(--space-sm);
+  }
+
+  .sidebar-logo {
+    justify-content: center;
+  }
+
+  .sidebar-logo > div:last-child {
+    display: none;
+  }
+
+  .sidebar-title {
+    display: none;
+  }
+
+  .sidebar-link {
+    justify-content: center;
+
+    padding: 12px;
+  }
+
+  .sidebar-link span:last-child {
+    display: none;
+  }
+
+  .sidebar-icon {
+    font-size: 18px;
+  }
+}
