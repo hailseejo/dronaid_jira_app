@@ -1,59 +1,70 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
-import "./LoginPage.css";
+import "./SignUpPage.css";
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (password !== confirmPassword) {
+      return setError("Passwords do not match.");
+    }
+
+    if (password.length < 6) {
+      return setError("Password must be at least 6 characters.");
+    }
+
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, email.trim(), password);
+      await createUserWithEmailAndPassword(auth, email.trim(), password);
       navigate("/dashboard");
     } catch (err) {
-      console.error("Firebase Detailed Login Error:", err);
-      setError(`[${err.code || "ERROR"}]: ${err.message || "Failed to sign in"}`);
+      console.error("Firebase Detailed Sign Up Error:", err);
+      
+      // Displays the exact error code from Firebase directly in the alert box
+      setError(`[${err.code || "ERROR"}]: ${err.message || "Failed to register"}`);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="login-container">
+    <div className="signup-container">
       <div className="bg-grid"></div>
       <div className="glow-left"></div>
       <div className="glow-right"></div>
 
       <div className="hud-overlay hud-left">
         <div><span className="hud-label">SYS</span> 01</div>
-        <div><span className="hud-label">STATUS</span> : OK</div>
-        <div><span className="hud-label">CONNECTION</span> : STABLE</div>
+        <div><span className="hud-label">STATUS</span> : REGISTRATION</div>
         <div><span className="hud-label">LINK</span> : SECURE</div>
-        <br />
-        <div><span className="hud-label">GPS</span> : LOCKED</div>
-        <div><span className="hud-label">SAT</span> : 12</div>
-        <div><span className="hud-label">MODE</span> : STANDBY</div>
       </div>
 
       <div className="hud-overlay hud-right">
-        <div><span className="hud-label">ALT</span> : 120M</div>
-        <div><span className="hud-label">SPD</span> : 18.4 M/S</div>
-        <div><span className="hud-label">BAT</span> : 76%</div>
+        <div><span className="hud-label">MODE</span> : NEW USER</div>
+        <div><span className="hud-label">ENCRYPTION</span> : AES-256</div>
       </div>
 
-      <div className="login-card">
+      <div className="signup-card">
+        <div className="back-nav">
+          <Link to="/login" className="back-button">
+            ← Back to Sign In
+          </Link>
+        </div>
+
         <div className="logo-container">
           <div className="drone-icon">
             <svg viewBox="0 0 100 40" width="80" height="32" fill="none">
@@ -67,21 +78,21 @@ export default function LoginPage() {
           <h1 className="logo-text">DR<span className="highlight-o">O</span>NAID</h1>
         </div>
 
-        <div className="login-header">
-          <h2>Welcome</h2>
-          <p>Sign in to continue</p>
+        <div className="signup-header">
+          <h2>Create Account</h2>
+          <p>Register new operator profile</p>
         </div>
 
         {error && <div className="error-badge">{error}</div>}
 
-        <form onSubmit={handleLogin} className="login-form">
+        <form onSubmit={handleSignUp} className="signup-form">
           <div className="form-group">
-            <label>Username or Email</label>
+            <label>Email Address</label>
             <div className="input-wrapper">
               <span className="input-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
                 </svg>
               </span>
               <input
@@ -105,7 +116,7 @@ export default function LoginPage() {
               </span>
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
+                placeholder="Create password (min 6 chars)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -123,30 +134,33 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div className="forgot-link-container">
-            <a href="#forgot" className="forgot-link">Forgot password?</a>
-          </div>
-
-          <div className="remember-container">
-            <label className="checkbox-label">
+          <div className="form-group">
+            <label>Confirm Password</label>
+            <div className="input-wrapper">
+              <span className="input-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </span>
               <input
-                type="checkbox"
-                checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
+                type={showPassword ? "text" : "password"}
+                placeholder="Confirm your password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
               />
-              <span className="custom-checkbox"></span>
-              Remember me
-            </label>
+            </div>
           </div>
 
           <button type="submit" className="submit-btn" disabled={loading}>
-            {loading ? "AUTHENTICATING..." : "SIGN IN"}
+            {loading ? "CREATING ACCOUNT..." : "REGISTER ACCOUNT"}
             {!loading && <span className="btn-arrow">→</span>}
           </button>
         </form>
 
-        <div className="signup-footer">
-          Don't have an account? <Link to="/signup">Sign up</Link>
+        <div className="login-footer">
+          Already have an account? <Link to="/login">Sign in</Link>
         </div>
       </div>
     </div>
