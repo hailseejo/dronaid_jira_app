@@ -1,0 +1,1026 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+  width: 100%;
+}
+
+body {
+  background: #020610;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+.dashboard {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+
+  color: #e7e3eb;
+
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(116, 34, 154, 0.10),
+      transparent 42%
+    ),
+    #020610;
+}
+
+
+/* =====================================================
+   BACKGROUND
+===================================================== */
+
+.grid-background {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  opacity: 0.35;
+
+  background-image:
+    radial-gradient(
+      rgba(177, 65, 215, 0.7) 1px,
+      transparent 1px
+    );
+
+  background-size: 18px 18px;
+}
+
+.purple-glow {
+  position: absolute;
+
+  width: 500px;
+  height: 500px;
+
+  border-radius: 50%;
+
+  background: rgba(131, 38, 164, 0.05);
+
+  filter: blur(100px);
+
+  pointer-events: none;
+}
+
+.glow-one {
+  left: 15%;
+  top: 20%;
+}
+
+.glow-two {
+  right: 5%;
+  bottom: 5%;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.header {
+  height: 88px;
+
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 30px;
+
+  position: relative;
+  z-index: 20;
+
+  border-top: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+
+/* =====================================================
+   LOGO
+===================================================== */
+
+.logo {
+  width: 280px;
+
+  display: flex;
+  align-items: center;
+}
+
+.logo-mark {
+  width: 42px;
+  height: 32px;
+
+  position: relative;
+}
+
+.logo-wing {
+  position: absolute;
+
+  width: 25px;
+  height: 1px;
+
+  top: 10px;
+
+  background: #bb51d7;
+}
+
+.logo-wing.left {
+  left: 0;
+  transform: rotate(8deg);
+}
+
+.logo-wing.right {
+  right: 0;
+  transform: rotate(-8deg);
+}
+
+.logo-cross {
+  position: absolute;
+
+  top: 0;
+  left: 18px;
+
+  color: #bb51d7;
+
+  font-size: 12px;
+}
+
+.logo-name {
+  font-size: 28px;
+
+  font-weight: 500;
+
+  letter-spacing: 2px;
+}
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+.nav {
+  display: flex;
+
+  gap: 6px;
+
+  margin: auto;
+}
+
+.nav-button {
+  height: 38px;
+
+  width: 125px;
+
+  border: 1px solid rgba(144, 63, 180, 0.4);
+
+  border-radius: 4px;
+
+  background: rgba(4, 8, 20, 0.7);
+
+  color: #d0ccd6;
+
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+.nav-button:hover {
+  border-color: #bc4ddd;
+}
+
+.nav-button.active {
+  color: #db6ce9;
+
+  border-color: #a94ac8;
+
+  box-shadow:
+    inset 0 0 18px rgba(170, 56, 205, 0.08);
+}
+
+
+/* =====================================================
+   HEADER USER
+===================================================== */
+
+.header-user {
+  width: 280px;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  background: transparent;
+
+  border: none;
+
+  color: white;
+
+  cursor: pointer;
+}
+
+.user-circle {
+  width: 36px;
+  height: 36px;
+
+  border: 1px solid #d8d4dc;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-arrow {
+  font-size: 16px;
+}
+
+
+/* =====================================================
+   ICONS
+===================================================== */
+
+.icon {
+  width: 24px;
+  height: 24px;
+
+  fill: none;
+
+  stroke: currentColor;
+
+  stroke-width: 1.5;
+
+  stroke-linecap: round;
+
+  stroke-linejoin: round;
+}
+
+.arrow-icon {
+  width: 20px;
+  height: 20px;
+
+  fill: none;
+
+  stroke: currentColor;
+
+  stroke-width: 1.5;
+
+  stroke-linecap: round;
+
+  stroke-linejoin: round;
+}
+
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+.main {
+  min-height: calc(100vh - 88px);
+
+  position: relative;
+  z-index: 5;
+
+  display: grid;
+
+  grid-template-columns:
+    180px
+    minmax(500px, 1fr)
+    195px;
+
+  gap: 18px;
+
+  padding: 22px 18px;
+}
+
+
+/* =====================================================
+   LEFT SIDE
+===================================================== */
+
+.left-side {
+  position: relative;
+}
+
+
+/* =====================================================
+   FLIGHT DATA
+===================================================== */
+
+.flight-data {
+  position: absolute;
+
+  top: 5px;
+  left: 10px;
+
+  width: 105px;
+
+  padding: 9px;
+
+  border: 1px solid #bd8d3e;
+
+  background: rgba(3, 7, 18, 0.8);
+
+  color: #c764d5;
+
+  font-size: 9px;
+
+  line-height: 20px;
+}
+
+.flight-data span {
+  color: #d49cdb;
+}
+
+
+/* =====================================================
+   DRONE
+===================================================== */
+
+.drone {
+  position: absolute;
+
+  top: 80px;
+  left: -20px;
+
+  width: 200px;
+  height: 230px;
+
+  opacity: 0.75;
+
+  filter:
+    drop-shadow(
+      0 0 8px rgba(183, 61, 215, 0.18)
+    );
+}
+
+.drone.flip {
+  transform: scaleX(-1);
+}
+
+.drone-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.drone-line {
+  fill: none;
+
+  stroke: #b449c9;
+
+  stroke-width: 1;
+}
+
+.drone-body {
+  fill: rgba(88, 30, 110, 0.06);
+
+  stroke: #b449c9;
+
+  stroke-width: 1;
+}
+
+
+/* =====================================================
+   DECORATIVE +
+===================================================== */
+
+.decorative-plus {
+  position: absolute;
+
+  color: #c64ddd;
+
+  font-size: 25px;
+}
+
+.plus-left {
+  left: 15px;
+  bottom: 25px;
+}
+
+.plus-bottom {
+  right: 15px;
+  bottom: 5px;
+}
+
+
+/* =====================================================
+   CENTER
+===================================================== */
+
+.center {
+  min-width: 0;
+}
+
+
+/* =====================================================
+   GREETING
+===================================================== */
+
+.greeting {
+  margin-bottom: 27px;
+}
+
+.greeting h1 {
+  margin: 0;
+
+  color: #f1edf4;
+
+  font-size: 23px;
+
+  font-weight: 600;
+}
+
+.greeting p {
+  margin: 7px 0 0;
+
+  color: #aaa6b0;
+
+  font-size: 12px;
+}
+
+
+/* =====================================================
+   CARDS
+===================================================== */
+
+.cards {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1fr
+    1.08fr;
+
+  gap: 12px;
+}
+
+.card {
+  min-height: 375px;
+
+  padding: 14px 13px;
+
+  display: flex;
+  flex-direction: column;
+
+  border:
+    1px solid rgba(135, 60, 173, 0.45);
+
+  border-radius: 7px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(7, 12, 27, 0.97),
+      rgba(3, 8, 18, 0.93)
+    );
+}
+
+
+/* =====================================================
+   CARD HEADER
+===================================================== */
+
+.card-heading {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 12px;
+
+  color: #e1dde5;
+
+  font-size: 13px;
+}
+
+.card-icon {
+  color: #c152d8;
+
+  display: flex;
+}
+
+
+/* =====================================================
+   TASKS
+===================================================== */
+
+.task-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+
+/* TODO */
+
+.todo-item {
+  min-height: 41px;
+
+  padding: 8px;
+
+  border:
+    1px solid rgba(67, 77, 108, 0.35);
+
+  border-radius: 5px;
+
+  background: rgba(4, 10, 24, 0.65);
+}
+
+.todo-name {
+  color: #ddd9e1;
+
+  font-size: 11px;
+
+  margin-bottom: 5px;
+}
+
+.todo-date {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  color: #99959f;
+
+  font-size: 9px;
+}
+
+
+/* IN PROGRESS */
+
+.progress-item {
+  min-height: 41px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 8px;
+
+  border:
+    1px solid rgba(67, 77, 108, 0.35);
+
+  border-radius: 5px;
+
+  background: rgba(4, 10, 24, 0.65);
+
+  color: #d7d3dc;
+
+  font-size: 11px;
+}
+
+
+/* =====================================================
+   PRIORITY DOT
+===================================================== */
+
+.priority-dot {
+  width: 7px;
+  height: 7px;
+
+  display: inline-block;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+}
+
+.priority-dot.urgent {
+  background: #f05261;
+
+  box-shadow:
+    0 0 7px rgba(240, 82, 97, 0.45);
+}
+
+.priority-dot.high {
+  background: #a84ddd;
+
+  box-shadow:
+    0 0 7px rgba(168, 77, 221, 0.4);
+}
+
+.priority-dot.medium {
+  background: #3bb7df;
+}
+
+.priority-dot.low {
+  background: #9c74e5;
+}
+
+
+/* =====================================================
+   DEPENDENCIES
+===================================================== */
+
+.dependency-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.dependency-item {
+  min-height: 112px;
+
+  padding: 10px;
+
+  border:
+    1px solid rgba(67, 77, 108, 0.35);
+
+  border-radius: 5px;
+
+  background: rgba(4, 10, 24, 0.6);
+}
+
+.waiting {
+  color: #c15bd5;
+
+  font-size: 9px;
+
+  margin-bottom: 6px;
+}
+
+.dependency-title {
+  color: #d6d2db;
+
+  font-size: 10px;
+
+  line-height: 16px;
+}
+
+.dependency-member {
+  color: #97939d;
+
+  font-size: 9px;
+
+  margin-top: 3px;
+}
+
+.dependency-date {
+  color: #dfc62a;
+
+  font-size: 9px;
+
+  margin-top: 6px;
+}
+
+
+/* =====================================================
+   VIEW ALL
+===================================================== */
+
+.view-all {
+  margin-top: auto;
+
+  padding:
+    14px 2px 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  border: none;
+
+  background: transparent;
+
+  color: #c960dc;
+
+  font-size: 10px;
+
+  cursor: pointer;
+}
+
+.view-all:hover {
+  color: #ed7aef;
+}
+
+
+/* =====================================================
+   RIGHT SIDE
+===================================================== */
+
+.right-side {
+  position: relative;
+  z-index: 10;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 9px;
+}
+
+
+/* =====================================================
+   PROFILE
+===================================================== */
+
+.profile-card {
+  min-height: 76px;
+
+  padding: 11px 13px;
+
+  display: flex;
+
+  gap: 11px;
+
+  border:
+    1px solid rgba(137, 61, 174, 0.45);
+
+  border-radius: 7px;
+
+  background: rgba(5, 10, 23, 0.92);
+}
+
+.profile-symbol {
+  color: #c354da;
+}
+
+.profile-info {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+
+  font-size: 9px;
+}
+
+.profile-info div {
+  display: flex;
+
+  gap: 5px;
+}
+
+.profile-info span {
+  color: #bd5ed0;
+}
+
+.profile-info strong {
+  color: #d6d2da;
+
+  font-weight: 400;
+}
+
+
+/* =====================================================
+   SIDE CARDS
+===================================================== */
+
+.side-card {
+  padding: 14px;
+
+  border:
+    1px solid rgba(137, 61, 174, 0.45);
+
+  border-radius: 7px;
+
+  background: rgba(5, 10, 23, 0.92);
+}
+
+.side-card h2 {
+  margin: 0 0 17px;
+
+  color: #ded9e2;
+
+  font-size: 12px;
+
+  font-weight: 400;
+}
+
+
+/* =====================================================
+   PRIORITY
+===================================================== */
+
+.priority-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 11px;
+
+  color: #d7d3dc;
+
+  font-size: 10px;
+}
+
+.priority-list div {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+
+/* =====================================================
+   DEADLINES
+===================================================== */
+
+.deadlines {
+  min-height: 230px;
+}
+
+.deadline-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 13px;
+}
+
+.deadline {
+  font-size: 9px;
+}
+
+.deadline div {
+  color: #d6d2da;
+
+  line-height: 15px;
+}
+
+.deadline span {
+  display: block;
+
+  padding-left: 11px;
+
+  margin-top: 4px;
+
+  color: #c95bdd;
+}
+
+
+/* =====================================================
+   RIGHT DRONE
+===================================================== */
+
+.right-drone {
+  position: absolute;
+
+  right: -25px;
+  top: 155px;
+
+  width: 195px;
+  height: 230px;
+
+  z-index: 2;
+}
+
+
+/* =====================================================
+   GPS
+===================================================== */
+
+.gps {
+  position: absolute;
+
+  right: 18px;
+  bottom: 18px;
+
+  width: 140px;
+
+  padding: 10px 13px;
+
+  border: 1px solid #bd8d3e;
+
+  background: rgba(3, 7, 18, 0.85);
+
+  color: #c766d6;
+
+  font-size: 9px;
+
+  line-height: 19px;
+
+  z-index: 15;
+}
+
+.gps span {
+  color: #d39ad9;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 1150px) {
+
+  .main {
+    grid-template-columns:
+      140px
+      minmax(450px, 1fr)
+      180px;
+  }
+
+  .logo {
+    width: 220px;
+  }
+
+  .header-user {
+    width: 220px;
+  }
+
+  .nav-button {
+    width: 110px;
+  }
+
+}
+
+
+@media (max-width: 900px) {
+
+  .dashboard {
+    overflow-y: auto;
+  }
+
+  .header {
+    padding: 0 15px;
+  }
+
+  .logo {
+    width: auto;
+  }
+
+  .nav {
+    margin-left: auto;
+    margin-right: 10px;
+  }
+
+  .header-user {
+    width: auto;
+  }
+
+  .main {
+    grid-template-columns: 1fr;
+  }
+
+  .left-side,
+  .right-drone {
+    display: none;
+  }
+
+  .right-side {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .profile-card {
+    grid-column: 1 / -1;
+  }
+
+}
+
+
+@media (max-width: 650px) {
+
+  .logo-name {
+    font-size: 21px;
+  }
+
+  .logo-mark {
+    display: none;
+  }
+
+  .nav-button {
+    width: auto;
+
+    padding: 0 8px;
+
+    font-size: 8px;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  .right-side {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-card {
+    grid-column: auto;
+  }
+
+}

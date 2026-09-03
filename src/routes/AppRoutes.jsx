@@ -1,25 +1,51 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
 import LoginPage from "../pages/Login/LoginPage";
 import SignUpPage from "../pages/SignUp/SignUpPage";
-import HomePage from "../pages/Home/HomePage";
+
+import Dashboard from "../components/dashboard/Dashboard";
+
 import ProtectedRoute from "./ProtectedRoute";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
+
+        {/* Website opens → Login */}
+        <Route
+          path="/"
+          element={<Navigate to="/login" replace />}
+        />
+
+        {/* LOGIN */}
+        <Route
+          path="/login"
+          element={<LoginPage />}
+        />
+
+        {/* SIGN UP */}
+        <Route
+          path="/signup"
+          element={<SignUpPage />}
+        />
+
+        {/* AFTER LOGIN → OUR NEW DASHBOARD */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <HomePage />
+              <Dashboard />
             </ProtectedRoute>
           }
         />
-        <Route path="*" element={<Navigate to="/login" replace />} />
+
+        {/* Anything else → Login */}
+        <Route
+          path="*"
+          element={<Navigate to="/login" replace />}
+        />
+
       </Routes>
     </BrowserRouter>
   );
