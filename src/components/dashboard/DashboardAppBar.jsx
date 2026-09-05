@@ -11,6 +11,7 @@ export default function DashboardAppBar() {
 
       <nav className="common-appbar-nav" aria-label="Primary navigation">
         <NavLink to="/general" className={({ isActive }) => `common-appbar-link${isActive ? " active" : ""}`}>GENERAL</NavLink>
+        <NavLink to="/competition" className={({ isActive }) => `common-appbar-link${isActive ? " active" : ""}`}>COMPETITION</NavLink>
         <NavLink to="/team" className={({ isActive }) => `common-appbar-link${isActive ? " active" : ""}`}>TEAM</NavLink>
       </nav>
 

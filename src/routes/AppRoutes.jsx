@@ -5,6 +5,7 @@ import SignUpPage from "../pages/SignUp/SignUpPage";
 
 import Dashboard from "../components/dashboard/Dashboard";
 import LegacyDashboard from "../components/dashboard/LegacyDashboard";
+import CompetitionPage from "../pages/Competition/CompetitionPage";
 
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -64,6 +65,15 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute>
               <LegacyDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/competition"
+          element={
+            <ProtectedRoute>
+              <CompetitionPage />
             </ProtectedRoute>
           }
         />
