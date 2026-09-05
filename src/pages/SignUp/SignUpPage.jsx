@@ -1,13 +1,32 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase/firebase";
+import { loginUser, registerUser } from "../../firebase/auth";
+import { createUserProfile } from "../../firebase/firestore";
 import "./SignUpPage.css";
 
+const withTimeout = (promise, message, timeout = 15000) =>
+  new Promise((resolve, reject) => {
+    const timeoutId = window.setTimeout(() => reject(new Error(message)), timeout);
+
+    promise.then(
+      (value) => {
+        window.clearTimeout(timeoutId);
+        resolve(value);
+      },
+      (error) => {
+        window.clearTimeout(timeoutId);
+        reject(error);
+      },
+    );
+  });
+
 export default function SignUpPage() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [subsystem, setSubsystem] = useState("");
+  const [role, setRole] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,6 +36,18 @@ export default function SignUpPage() {
   const handleSignUp = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (!name.trim()) {
+      return setError("Name is required.");
+    }
+
+    if (!subsystem) {
+      return setError("Please select a subsystem.");
+    }
+
+    if (!role) {
+      return setError("Please select a role.");
+    }
 
     if (password !== confirmPassword) {
       return setError("Passwords do not match.");
@@ -29,13 +60,35 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      await createUserWithEmailAndPassword(auth, email.trim(), password);
+      let credential;
+
+      try {
+        credential = await withTimeout(
+          registerUser(email.trim(), password),
+          "Account creation timed out. Check your internet connection and try again.",
+        );
+      } catch (authError) {
+        if (authError.code !== "auth/email-already-in-use") {
+          throw authError;
+        }
+
+        // Complete the profile for an account created before its Firestore write failed.
+        credential = await withTimeout(
+          loginUser(email.trim(), password),
+          "Unable to verify the existing account. Check your internet connection and try again.",
+        );
+      }
+
+      await withTimeout(createUserProfile(credential.user.uid, {
+        name: name.trim(),
+        email: email.trim(),
+        subsystem,
+        role,
+      }), "Your account was created, but the profile could not be saved. Check that Cloud Firestore is enabled and its rules allow this signup.");
       navigate("/dashboard");
     } catch (err) {
       console.error("Firebase Detailed Sign Up Error:", err);
-      
-      // Displays the exact error code from Firebase directly in the alert box
-      setError(`[${err.code || "ERROR"}]: ${err.message || "Failed to register"}`);
+      setError(err.message || "Unable to create your account. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -87,6 +140,25 @@ export default function SignUpPage() {
 
         <form onSubmit={handleSignUp} className="signup-form">
           <div className="form-group">
+            <label>Name</label>
+            <div className="input-wrapper">
+              <span className="input-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="8" r="4"></circle>
+                  <path d="M4 20c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"></path>
+                </svg>
+              </span>
+              <input
+                type="text"
+                placeholder="Enter your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
             <label>Email Address</label>
             <div className="input-wrapper">
               <span className="input-icon">
@@ -102,6 +174,45 @@ export default function SignUpPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Subsystem</label>
+            <div className="input-wrapper">
+              <span className="input-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"></path>
+                </svg>
+              </span>
+              <select value={subsystem} onChange={(e) => setSubsystem(e.target.value)} required>
+                <option value="" disabled>Select your subsystem</option>
+                <option value="AI and Automation">AI and Automation</option>
+                <option value="Software">Software</option>
+                <option value="MAD">MAD</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Management">Management</option>
+                <option value="Research">Research</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Role</label>
+            <div className="input-wrapper">
+              <span className="input-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 2 3 7l9 5 9-5-9-5Z"></path>
+                  <path d="m3 12 9 5 9-5M3 17l9 5 9-5"></path>
+                </svg>
+              </span>
+              <select value={role} onChange={(e) => setRole(e.target.value)} required>
+                <option value="" disabled>Select your role</option>
+                <option value="Member">Member</option>
+                <option value="Head">Head</option>
+                <option value="Executive Board">Executive Board</option>
+              </select>
             </div>
           </div>
 
