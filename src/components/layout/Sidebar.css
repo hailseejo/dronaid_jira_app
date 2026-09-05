@@ -1,251 +1,68 @@
-/* =========================================
-   DRONAID SIDEBAR
-   Person 2 - App Layout
-   ========================================= */
-
 .sidebar {
-  width: var(--sidebar-width);
-  height: calc(100vh - var(--navbar-height));
-
-  position: fixed;
-  left: 0;
-  top: var(--navbar-height);
+  width: 72px;
+  flex-shrink: 0;
 
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 
-  background: var(--bg-secondary);
+  padding: var(--space-lg) 0;
 
-  border-right: 1px solid var(--border);
-
-  padding: var(--space-lg) var(--space-md);
-
-  overflow-y: auto;
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border-light);
 }
-
-
-/* =========================================
-   LOGO
-   ========================================= */
-
-.sidebar-logo {
-  display: flex;
-  align-items: center;
-
-  gap: var(--space-sm);
-
-  padding: var(--space-sm);
-  margin-bottom: var(--space-xl);
-}
-
-.sidebar-logo-icon {
-  width: 40px;
-  height: 40px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: var(--radius-md);
-
-  background: var(--primary);
-
-  color: var(--text-primary);
-
-  font-size: var(--font-lg);
-  font-weight: var(--weight-bold);
-
-  box-shadow: var(--shadow-purple);
-}
-
-.sidebar-logo h2 {
-  margin: 0;
-
-  color: var(--text-primary);
-
-  font-size: var(--font-md);
-  font-weight: var(--weight-bold);
-
-  letter-spacing: 1px;
-}
-
-.sidebar-logo p {
-  margin: 2px 0 0;
-
-  color: var(--text-muted);
-
-  font-size: var(--font-xs);
-}
-
-
-/* =========================================
-   NAVIGATION
-   ========================================= */
 
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-
-  gap: 6px;
+  align-items: center;
+  gap: var(--space-md);
 }
-
-.sidebar-title {
-  margin: 0 0 var(--space-sm);
-
-  padding: 0 var(--space-sm);
-
-  color: var(--text-muted);
-
-  font-size: var(--font-xs);
-  font-weight: var(--weight-semibold);
-
-  letter-spacing: 1px;
-}
-
-
-/* =========================================
-   SIDEBAR LINKS
-   ========================================= */
 
 .sidebar-link {
-  width: 100%;
-
-  display: flex;
-  align-items: center;
-
-  gap: var(--space-md);
-
-  padding: 11px 12px;
-
-  border-radius: var(--radius-md);
-
-  color: var(--text-secondary);
-
-  font-size: var(--font-sm);
-  font-weight: var(--weight-medium);
-
-  text-decoration: none;
-
-  transition:
-    background var(--transition-normal),
-    color var(--transition-normal),
-    border-color var(--transition-normal);
-
-  border: 1px solid transparent;
-}
-
-
-/* Hover */
-
-.sidebar-link:hover {
-  background: var(--bg-card-hover);
-
-  color: var(--text-primary);
-
-  border-color: var(--border-light);
-}
-
-
-/* Active */
-
-.sidebar-link.active {
-  background: rgba(100, 36, 255, 0.15);
-
-  color: var(--primary-light);
-
-  border-color: var(--border-light);
-
-  box-shadow: 0 0 15px rgba(100, 36, 255, 0.08);
-}
-
-
-/* =========================================
-   ICON
-   ========================================= */
-
-.sidebar-icon {
-  width: 24px;
+  width: 44px;
+  height: 44px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-size: 17px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: none;
 
-  flex-shrink: 0;
+  color: var(--text-muted);
+  cursor: pointer;
+
+  transition: all var(--transition-fast);
 }
 
-
-/* =========================================
-   BOTTOM SECTION
-   ========================================= */
-
-.sidebar-bottom {
-  margin-top: auto;
-
-  padding-top: var(--space-lg);
-
-  border-top: 1px solid var(--border-light);
+.sidebar-link:hover {
+  color: var(--text-primary);
+  background: var(--bg-card-hover);
 }
 
-
-/* =========================================
-   SCROLLBAR
-   ========================================= */
-
-.sidebar::-webkit-scrollbar {
-  width: 5px;
+.sidebar-link.active {
+  color: var(--purple-light);
+  background: rgba(139, 77, 255, 0.12);
+  border-color: var(--border);
 }
 
-.sidebar::-webkit-scrollbar-track {
-  background: transparent;
+.sidebar-logout {
+  align-self: center;
+  color: var(--danger);
 }
 
-.sidebar::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 10px;
+.sidebar-logout:hover {
+  background: rgba(255, 69, 101, 0.12);
 }
-
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background: var(--primary);
-}
-
-
-/* =========================================
-   MOBILE
-   ========================================= */
 
 @media (max-width: 700px) {
-
   .sidebar {
-    width: 70px;
-
-    padding: var(--space-md) var(--space-sm);
+    width: 56px;
   }
-
-  .sidebar-logo {
-    justify-content: center;
-  }
-
-  .sidebar-logo > div:last-child {
-    display: none;
-  }
-
-  .sidebar-title {
-    display: none;
-  }
-
   .sidebar-link {
-    justify-content: center;
-
-    padding: 12px;
-  }
-
-  .sidebar-link span:last-child {
-    display: none;
-  }
-
-  .sidebar-icon {
-    font-size: 18px;
+    width: 38px;
+    height: 38px;
   }
 }
