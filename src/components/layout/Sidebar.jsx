@@ -20,6 +20,11 @@ function Sidebar() {
       icon: "▣",
     },
     {
+      name: "Workspace Dashboard",
+      path: "/workspace-dashboard",
+      icon: "◈",
+    },
+    {
       name: "Competitions",
       path: "/competition",
       icon: "🏆",

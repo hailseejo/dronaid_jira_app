@@ -142,7 +142,8 @@
   color: #6b7280;
   display: flex;
 }
-.input-wrapper input {
+.input-wrapper input,
+.input-wrapper select {
   width: 100%;
   padding: 12px 14px 12px 42px;
   background: rgba(18, 16, 31, 0.8);
@@ -153,7 +154,16 @@
   outline: none;
   transition: all 0.2s ease;
 }
-.input-wrapper input:focus {
+.input-wrapper select {
+  appearance: none;
+  cursor: pointer;
+}
+.input-wrapper select option {
+  background: #12101f;
+  color: #ffffff;
+}
+.input-wrapper input:focus,
+.input-wrapper select:focus {
   border-color: #6366f1;
   box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
 }
