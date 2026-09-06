@@ -1,26 +1,102 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase/auth";
+import { getUserProfile } from "../firebase/firestore";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
+
   const [loading, setLoading] = useState(true);
+  const [profileMissing, setProfileMissing] = useState(false);
+  const [profileError, setProfileError] = useState(null);
 
   useEffect(() => {
-  
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      async (firebaseUser) => {
+        try {
+          // =====================================================
+          // USER LOGGED OUT
+          // =====================================================
+
+          if (!firebaseUser) {
+            setCurrentUser(null);
+            setUserProfile(null);
+            setProfileMissing(false);
+            setProfileError(null);
+            setLoading(false);
+            return;
+          }
+
+          // =====================================================
+          // USER LOGGED IN
+          // =====================================================
+
+          setCurrentUser(firebaseUser);
+          setProfileMissing(false);
+          setProfileError(null);
+
+          // Load the corresponding Firestore profile
+          const profile = await getUserProfile(
+            firebaseUser.uid
+          );
+
+          if (!profile) {
+            setUserProfile(null);
+            setProfileMissing(true);
+          } else {
+            setUserProfile(profile);
+            setProfileMissing(false);
+          }
+        } catch (error) {
+          console.error(
+            "Error loading user profile:",
+            error
+          );
+
+          setUserProfile(null);
+          setProfileError(error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    );
 
     return unsubscribe;
   }, []);
 
+  // =====================================================
+  // ROLE
+  // =====================================================
+
+  const isAdmin =
+    userProfile?.role === "Admin";
+
+  // =====================================================
+  // CONTEXT VALUE
+  // =====================================================
+
   const value = {
-    user,
+    currentUser,
+    userProfile,
+    isAdmin,
+
+    // Keep "user" too in case other existing components
+    // in your project use user instead of currentUser.
+    user: currentUser,
+
     loading,
+    profileMissing,
+    profileError,
   };
 
   return (

@@ -2,14 +2,91 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // NOTE: this costs one extra document read per rule evaluation. Fine at
+    // this project's scale; worth knowing if usage grows a lot.
+    function myProfile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && myProfile().role == "Admin";
+    }
+
+    function mySubsystem() {
+      return myProfile().subsystem;
+    }
+
+    // Keep this list in sync with src/constants/subsystems.js.
+    function isValidSubsystem(value) {
+      return value in [
+        "AI and Automation",
+        "Software",
+        "MAD",
+        "Electronics",
+        "Management",
+        "Research"
+      ];
+    }
+
     match /users/{userId} {
-      allow create: if request.auth != null && request.auth.uid == userId;
-      allow read: if request.auth != null && request.auth.uid == userId;
-      allow update: if request.auth != null
+      // Read your own doc, any doc in your own subsystem, or (Admin) any doc.
+      allow read: if isSignedIn() && (
+        userId == request.auth.uid ||
+        isAdmin() ||
+        resource.data.subsystem == mySubsystem()
+      );
+
+      // Self-service signup: a brand-new user may create ONLY their own
+      // doc, and only as a Member with a valid subsystem. This is what
+      // stops a crafted request from self-granting Admin at signup time.
+      allow create: if isSignedIn()
         && request.auth.uid == userId
-        && request.resource.data.role == resource.data.role
-        && request.resource.data.subsystem == resource.data.subsystem;
-      allow delete: if false;
+        && request.resource.data.role == "Member"
+        && isValidSubsystem(request.resource.data.subsystem);
+
+      // A user may update their own doc, but never their own role or
+      // subsystem (prevents Member -> Admin / Software -> MAD self-edits).
+      // An Admin may update anyone's doc, including role/subsystem.
+      allow update: if isSignedIn() && (
+        isAdmin() ||
+        (
+          request.auth.uid == userId &&
+          request.resource.data.role == resource.data.role &&
+          request.resource.data.subsystem == resource.data.subsystem
+        )
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    match /tasks/{taskId} {
+      allow read: if isSignedIn() && (
+        isAdmin() ||
+        (resource.data.subsystem == mySubsystem() && resource.data.status == "Ongoing") ||
+        resource.data.assignedTo == request.auth.uid ||
+        resource.data.createdBy == request.auth.uid
+      );
+
+      // subsystem and createdBy must match the caller's own authenticated
+      // profile — never a value handed in from a form.
+      allow create: if isSignedIn() && (
+        isAdmin() ||
+        (
+          request.resource.data.subsystem == mySubsystem() &&
+          request.resource.data.createdBy == request.auth.uid
+        )
+      );
+
+      allow update, delete: if isSignedIn() && (
+        isAdmin() ||
+        resource.data.createdBy == request.auth.uid ||
+        resource.data.assignedTo == request.auth.uid
+      );
     }
   }
 }
