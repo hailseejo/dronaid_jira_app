@@ -1,2 +1,835 @@
-@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@400;500&display=swap");
-.competition-page{min-height:100vh;padding:15px;background:radial-gradient(circle at 15% 12%,#181136 0,transparent 28%),radial-gradient(circle at 83% 33%,#100d2b 0,transparent 26%),#030611;color:#e8e6ff;font-family:Rajdhani,"Space Grotesk",sans-serif}.competition-page:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;background-image:linear-gradient(rgba(115,85,178,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(115,85,178,.09) 1px,transparent 1px);background-size:32px 32px}.competition-content{position:relative;z-index:1;max-width:1400px;margin:auto;padding:20px 14px 32px}.competition-corner-frame{border:1px solid #7340aa;border-radius:13px;background:linear-gradient(125deg,rgba(10,11,31,.95),rgba(3,5,17,.9));box-shadow:inset 0 0 35px rgba(91,30,156,.12),0 0 25px rgba(53,20,103,.08)}.competition-hero{position:relative;isolation:isolate;min-height:157px;overflow:hidden;padding:20px;text-align:center}.competition-hero:before,.competition-hero:after{content:"";position:absolute;z-index:-1;bottom:-96px;width:50%;height:150px;border:1px solid #58238e;border-radius:50% 50% 0 0;opacity:.65}.competition-hero:before{left:-3%;transform:rotate(-9deg)}.competition-hero:after{right:-3%;transform:rotate(9deg)}.competition-hero p{margin:0 0 5px;color:#aca3df;letter-spacing:3px;font-size:13px}.competition-hero h1{margin:0;color:#e8e5ff;font-family:"Space Grotesk",sans-serif;font-size:clamp(28px,4vw,47px);font-weight:500;letter-spacing:clamp(5px,1.25vw,15px);text-shadow:0 0 17px #8270d5}.competition-hero>span{display:block;margin-top:9px;color:#a59dce;letter-spacing:4px;font-size:13px}.competition-hero span b{padding:0 15px;color:#6c6198;font-weight:400}.competition-hero small{position:absolute;right:26px;bottom:15px;color:#b6add8;letter-spacing:1.6px;font-size:10px;text-align:left}.competition-grid{display:grid;grid-template-columns:minmax(0,2.05fr) minmax(280px,.98fr);gap:14px;margin-top:17px}.competition-checklist,.competition-dates{padding:15px}.competition-section-header,.competition-dates header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px;padding-bottom:13px;border-bottom:1px solid #242545}.competition-section-header h2,.competition-dates h2{margin:0;color:#c6c1e7;letter-spacing:2.5px;font-size:16px;font-weight:600}.competition-section-header h2:before,.competition-dates h2:before{content:"";display:inline-block;width:4px;height:30px;margin-right:14px;vertical-align:middle;border-radius:4px;background:#f7ef2d;box-shadow:0 0 9px #f7ef2d}.competition-section-header p,.competition-dates header p{margin:2px 0 0 18px;color:#837ba9;font-size:12px}.competition-filter{display:flex;align-items:center;gap:7px;color:#9890bd;font-family:"Space Grotesk",sans-serif;font-size:11px}.competition-filter select{min-width:154px;padding:8px 25px 8px 10px;color:#d7d2f2;border:1px solid #423071;border-radius:5px;background:#080b1e;font:inherit}.competition-table{overflow:auto;border:1px solid #1d2140;border-radius:6px}.competition-row{display:grid;grid-template-columns:56px 160px minmax(220px,1fr) 130px;align-items:center;min-width:610px;min-height:43px;border-bottom:1px solid #1d2140;color:#ddd9f1;font-family:"Space Grotesk",sans-serif;font-size:12px}.competition-row:last-child{border-bottom:0}.competition-head{min-height:27px;color:#928bb7;font-family:Rajdhani,sans-serif;font-size:12px;letter-spacing:1.5px;background:rgba(16,20,47,.65)}.competition-row:not(.competition-head){cursor:pointer;transition:background .18s}.competition-row:not(.competition-head):hover{background:rgba(98,46,158,.13)}.competition-row input{appearance:none;justify-self:center;width:19px;height:19px;border:1px solid #8479be;border-radius:3px;background:#070a1c;cursor:pointer}.competition-row input:checked{border-color:#b14cff;background:#8b32d3;box-shadow:inset 0 0 0 4px #070a1c}.competition-row.is-complete span{text-decoration:line-through;color:#716b91}.competition-row em{justify-self:start;min-width:65px;padding:4px 11px;border:1px solid;border-radius:5px;text-align:center;font-family:Rajdhani,sans-serif;font-style:normal;font-size:12px}.priority-high{color:#ff6c91;border-color:#9b1a42!important;background:#220b1a}.priority-medium{color:#f5e84b;border-color:#a99120!important;background:#211e09}.priority-low{color:#bd77ff;border-color:#54348d!important;background:#151128}.competition-empty{margin:0;padding:25px;color:#918ab3;text-align:center}.competition-dates header{display:block}.competition-dates header p{margin-left:18px}.timeline{position:relative;padding-left:13px}.timeline:before{content:"";position:absolute;top:12px;bottom:12px;left:22px;width:1px;background:#a5941e}.timeline-event{position:relative;display:grid;grid-template-columns:36px 1fr auto;align-items:center;width:100%;min-height:64px;padding:8px 5px;color:#e6e2f6;border:0;border-bottom:1px solid #1d2140;background:transparent;text-align:left;cursor:pointer}.timeline-event:last-child{border-bottom:0}.timeline-event:hover,.timeline-event.selected{background:rgba(96,47,158,.14)}.timeline-event i{z-index:1;width:22px;height:22px;border:3px solid #f9e934;border-radius:50%;background:#191a28;box-shadow:0 0 0 3px #82741d,0 0 10px #f5e62e}.timeline-event.selected i{background:#f8e932;box-shadow:0 0 0 3px #82741d,0 0 16px #f5e62e}.timeline-event strong,.timeline-event small{display:block}.timeline-event strong{font-family:"Space Grotesk",sans-serif;font-size:12px;font-weight:400}.timeline-event small{margin-top:3px;color:#9188b6;font-size:11px}.timeline-event>b{padding:5px 9px;color:#eee437;border:1px solid #938820;border-radius:5px;font-family:Rajdhani,sans-serif;font-size:11px;font-weight:600}.timeline-event.selected>b{color:#ddafff;border-color:#9b4ac8;background:#321345}@media(max-width:900px){.competition-page{padding:7px}.competition-grid{grid-template-columns:1fr}.competition-content{padding:12px 0 24px}.competition-dates{min-height:auto}}@media(max-width:680px){.competition-hero{min-height:145px;text-align:left}.competition-hero h1{font-size:27px;letter-spacing:5px}.competition-hero>span{letter-spacing:2px;font-size:11px}.competition-hero span b{padding:0 5px}.competition-hero small{display:none}.competition-section-header{align-items:flex-start;flex-direction:column}.competition-filter{width:100%;justify-content:space-between}.competition-filter select{width:68%}.competition-checklist,.competition-dates{padding:12px}.common-appbar-nav{gap:0}.common-appbar-link{min-width:92px;font-size:13px}}
+@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
+/* =====================================================
+   COMPETITIONS PAGE BASE
+   ===================================================== */
+
+.competition-page {
+  min-height: 100vh;
+  padding: 15px;
+  background:
+    radial-gradient(circle at 15% 12%, #181136 0, transparent 28%),
+    radial-gradient(circle at 83% 33%, #100d2b 0, transparent 26%),
+    #030611;
+  color: #e8e6ff;
+  font-family: Rajdhani, "Space Grotesk", sans-serif;
+}
+
+.competition-page:before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.22;
+  background-image:
+    linear-gradient(rgba(115, 85, 178, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(115, 85, 178, 0.09) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.competition-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: auto;
+  padding: 20px 14px 32px;
+}
+
+.competition-corner-frame {
+  border: 1px solid #7340aa;
+  border-radius: 13px;
+  background: linear-gradient(125deg, rgba(10, 11, 31, 0.95), rgba(3, 5, 17, 0.9));
+  box-shadow:
+    inset 0 0 35px rgba(91, 30, 156, 0.12),
+    0 0 25px rgba(53, 20, 103, 0.08);
+}
+
+/* =====================================================
+   HERO BANNER
+   ===================================================== */
+
+.competition-hero {
+  position: relative;
+  isolation: isolate;
+  min-height: 157px;
+  overflow: hidden;
+  padding: 20px;
+  text-align: center;
+}
+
+.competition-hero:before,
+.competition-hero:after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  bottom: -96px;
+  width: 50%;
+  height: 150px;
+  border: 1px solid #58238e;
+  border-radius: 50% 50% 0 0;
+  opacity: 0.65;
+}
+
+.competition-hero:before {
+  left: -3%;
+  transform: rotate(-9deg);
+}
+
+.competition-hero:after {
+  right: -3%;
+  transform: rotate(9deg);
+}
+
+.competition-hero p {
+  margin: 0 0 5px;
+  color: #aca3df;
+  letter-spacing: 3px;
+  font-size: 13px;
+}
+
+.competition-hero h1 {
+  margin: 0;
+  color: #e8e5ff;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(28px, 4vw, 47px);
+  font-weight: 500;
+  letter-spacing: clamp(5px, 1.25vw, 15px);
+  text-shadow: 0 0 17px #8270d5;
+}
+
+.competition-hero > span {
+  display: block;
+  margin-top: 9px;
+  color: #a59dce;
+  letter-spacing: 4px;
+  font-size: 13px;
+}
+
+.competition-hero span b {
+  padding: 0 15px;
+  color: #6c6198;
+  font-weight: 400;
+}
+
+.competition-hero small {
+  position: absolute;
+  right: 26px;
+  bottom: 15px;
+  color: #b6add8;
+  letter-spacing: 1.6px;
+  font-size: 10px;
+  text-align: left;
+}
+
+/* =====================================================
+   MAIN GRID
+   ===================================================== */
+
+.competition-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(350px, 1.1fr);
+  gap: 18px;
+  margin-top: 17px;
+}
+
+.competition-checklist,
+.competition-dates {
+  padding: 18px;
+}
+
+/* =====================================================
+   SECTION HEADERS
+   ===================================================== */
+
+.competition-section-header,
+.dates-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #242545;
+}
+
+.competition-section-header h2,
+.dates-header h2 {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  color: #e8e5ff;
+  letter-spacing: 2px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.competition-section-header h2:before,
+.dates-header h2:before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 24px;
+  margin-right: 12px;
+  border-radius: 4px;
+  background: #f7ef2d;
+  box-shadow: 0 0 10px #f7ef2d;
+  flex-shrink: 0;
+}
+
+.competition-section-header p,
+.dates-header p {
+  margin: 4px 0 0 16px;
+  color: #8a82b2;
+  font-size: 12px;
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.competition-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.competition-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #9890bd;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 12px;
+}
+
+.competition-filter select {
+  min-width: 154px;
+  padding: 7px 24px 7px 10px;
+  color: #d7d2f2;
+  border: 1px solid #423071;
+  border-radius: 6px;
+  background: #080b1e;
+  font: inherit;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.competition-filter select:focus {
+  border-color: #9b4ac8;
+}
+
+/* =====================================================
+   ACTION BUTTONS
+   ===================================================== */
+
+.add-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: rgba(123, 60, 255, 0.16);
+  border: 1px solid rgba(123, 60, 255, 0.45);
+  border-radius: 6px;
+  color: #f1edff;
+  font-family: Rajdhani, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.add-button:hover {
+  background: rgba(123, 60, 255, 0.35);
+  border-color: #a855f7;
+  box-shadow: 0 0 14px rgba(139, 44, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.add-button.is-active {
+  background: rgba(255, 69, 101, 0.15);
+  border-color: rgba(255, 69, 101, 0.45);
+  color: #ff8ca3;
+}
+
+.add-button.is-active:hover {
+  background: rgba(255, 69, 101, 0.28);
+  border-color: #ff4565;
+  box-shadow: 0 0 12px rgba(255, 69, 101, 0.35);
+}
+
+.delete-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: #7d749e;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  flex-shrink: 0;
+}
+
+.delete-button:hover {
+  color: #ff4565;
+  background: rgba(255, 69, 101, 0.12);
+  border-color: rgba(255, 69, 101, 0.35);
+}
+
+.event-delete {
+  margin-right: 4px;
+}
+
+/* =====================================================
+   FORMS (ADD COMPETITION & ADD TASK)
+   ===================================================== */
+
+.competition-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  background: rgba(12, 14, 34, 0.95);
+  border: 1px solid rgba(123, 60, 255, 0.35);
+  border-radius: 10px;
+  box-shadow:
+    inset 0 0 25px rgba(91, 30, 156, 0.12),
+    0 8px 24px rgba(0, 0, 0, 0.4);
+  animation: fadeInCompForm 0.2s ease-out;
+}
+
+@keyframes fadeInCompForm {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.competition-form-header {
+  margin-bottom: 2px;
+}
+
+.competition-form-header h3 {
+  margin: 0;
+  color: #f1edff;
+  font-family: Rajdhani, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.competition-form-header p {
+  margin: 2px 0 0;
+  color: #8b83b3;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 11px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #b6add8;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.label-required {
+  color: #ff6c91;
+}
+
+.label-optional {
+  color: #716b91;
+  font-size: 10px;
+}
+
+.competition-form input,
+.competition-form select {
+  width: 100%;
+  padding: 9px 12px;
+  background: #070919;
+  border: 1px solid #3d2f66;
+  border-radius: 6px;
+  color: #f1edff;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  box-sizing: border-box;
+}
+
+.competition-form input[type="date"] {
+  color-scheme: dark;
+  cursor: pointer;
+}
+
+.competition-form input:focus,
+.competition-form select:focus {
+  border-color: #9b4ac8;
+  box-shadow: 0 0 10px rgba(155, 74, 200, 0.35);
+  background: #0d1029;
+}
+
+.competition-form input::placeholder {
+  color: #5c557d;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.save-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  background: linear-gradient(135deg, #7b3cff, #5818d6);
+  border: 1px solid #9b58ff;
+  border-radius: 6px;
+  color: #ffffff;
+  font-family: Rajdhani, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 10px rgba(123, 60, 255, 0.35);
+}
+
+.save-button:hover {
+  background: linear-gradient(135deg, #8f55ff, #6a22e8);
+  box-shadow: 0 4px 16px rgba(139, 44, 255, 0.55);
+  transform: translateY(-1px);
+}
+
+.cancel-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid #3d2f66;
+  border-radius: 6px;
+  color: #9890bd;
+  font-family: Rajdhani, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-button:hover {
+  border-color: #645591;
+  color: #e8e6ff;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* =====================================================
+   CHECKLIST TABLE
+   ===================================================== */
+
+.competition-table {
+  overflow-x: auto;
+  border: 1px solid #1d2140;
+  border-radius: 8px;
+  background: rgba(7, 9, 23, 0.6);
+}
+
+.competition-row {
+  display: grid;
+  grid-template-columns: 46px 140px minmax(200px, 1fr) 110px 42px;
+  align-items: center;
+  min-width: 580px;
+  min-height: 44px;
+  padding: 0 6px;
+  border-bottom: 1px solid #1d2140;
+  color: #ddd9f1;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 13px;
+  transition: background 0.18s;
+}
+
+.competition-row:last-child {
+  border-bottom: 0;
+}
+
+.competition-head {
+  min-height: 32px;
+  color: #928bb7;
+  font-family: Rajdhani, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  background: rgba(16, 20, 47, 0.75);
+}
+
+.competition-row:not(.competition-head):hover {
+  background: rgba(98, 46, 158, 0.12);
+}
+
+.competition-row input[type="checkbox"] {
+  appearance: none;
+  justify-self: center;
+  width: 19px;
+  height: 19px;
+  border: 1px solid #8479be;
+  border-radius: 4px;
+  background: #070a1c;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.18s;
+}
+
+.competition-row input[type="checkbox"]:checked {
+  border-color: #b14cff;
+  background: #8b32d3;
+}
+
+.competition-row input[type="checkbox"]:checked:after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 9px;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.competition-row.is-complete .task-desc,
+.competition-row.is-complete .task-subsystem {
+  text-decoration: line-through;
+  color: #6a6486;
+}
+
+.task-subsystem {
+  font-weight: 500;
+  color: #c9c3e8;
+}
+
+.task-desc {
+  color: #ddd9f1;
+  word-break: break-word;
+}
+
+.competition-row em {
+  justify-self: start;
+  min-width: 65px;
+  padding: 3px 10px;
+  border: 1px solid;
+  border-radius: 5px;
+  text-align: center;
+  font-family: Rajdhani, sans-serif;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.competition-row .delete-button {
+  justify-self: center;
+}
+
+.priority-high {
+  color: #ff6c91;
+  border-color: #9b1a42 !important;
+  background: #220b1a;
+}
+
+.priority-medium {
+  color: #f5e84b;
+  border-color: #a99120 !important;
+  background: #211e09;
+}
+
+.priority-low {
+  color: #bd77ff;
+  border-color: #54348d !important;
+  background: #151128;
+}
+
+/* =====================================================
+   UPCOMING COMPETITIONS TIMELINE
+   ===================================================== */
+
+.timeline {
+  position: relative;
+  padding-left: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.timeline:before {
+  content: "";
+  position: absolute;
+  top: 22px;
+  bottom: 22px;
+  left: 20px;
+  width: 2px;
+  background: linear-gradient(to bottom, #a5941e 0%, rgba(165, 148, 30, 0.25) 100%);
+  z-index: 0;
+}
+
+.timeline-event {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px 6px 6px;
+  background: rgba(10, 12, 28, 0.7);
+  border: 1px solid rgba(115, 64, 170, 0.25);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease;
+}
+
+.timeline-event:hover {
+  background: rgba(96, 47, 158, 0.16);
+  border-color: rgba(123, 60, 255, 0.5);
+  box-shadow: 0 4px 14px rgba(91, 30, 156, 0.2);
+}
+
+.timeline-event.selected {
+  background: rgba(96, 47, 158, 0.26);
+  border-color: #a855f7;
+  box-shadow: 0 0 16px rgba(123, 60, 255, 0.22);
+}
+
+.timeline-select {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: transparent;
+  border: none;
+  padding: 6px 4px 6px 6px;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+
+.timeline-marker-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.timeline-marker {
+  width: 14px;
+  height: 14px;
+  border: 2.5px solid #f9e934;
+  border-radius: 50%;
+  background: #191a28;
+  box-shadow:
+    0 0 0 3px rgba(130, 116, 29, 0.6),
+    0 0 10px #f5e62e;
+  transition: all 0.2s ease;
+}
+
+.timeline-event:hover .timeline-marker {
+  transform: scale(1.15);
+  box-shadow:
+    0 0 0 3px #82741d,
+    0 0 14px #f5e62e;
+}
+
+.timeline-event.selected .timeline-marker {
+  background: #f8e932;
+  transform: scale(1.15);
+  box-shadow:
+    0 0 0 3px #82741d,
+    0 0 16px #f5e62e;
+}
+
+.timeline-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.timeline-info-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.timeline-name {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f1edff;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.timeline-status {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: Rajdhani, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.status-upcoming {
+  color: #f5e84b;
+  border: 1px solid rgba(245, 232, 75, 0.4);
+  background: rgba(245, 232, 75, 0.08);
+}
+
+.status-selected {
+  color: #ddafff;
+  border: 1px solid rgba(221, 175, 255, 0.5);
+  background: rgba(155, 74, 200, 0.3);
+  box-shadow: 0 0 8px rgba(155, 74, 200, 0.25);
+}
+
+.timeline-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 12px;
+  color: #9f96c4;
+}
+
+.timeline-date,
+.timeline-location {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.meta-icon {
+  color: #8b80b5;
+  flex-shrink: 0;
+}
+
+.competition-empty {
+  margin: 0;
+  padding: 28px 16px;
+  color: #8c85ad;
+  text-align: center;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* =====================================================
+   RESPONSIVE BREAKPOINTS
+   ===================================================== */
+
+@media (max-width: 960px) {
+  .competition-page {
+    padding: 10px;
+  }
+  .competition-grid {
+    grid-template-columns: 1fr;
+  }
+  .competition-content {
+    padding: 12px 0 24px;
+  }
+}
+
+@media (max-width: 680px) {
+  .competition-hero {
+    min-height: 145px;
+    text-align: left;
+  }
+  .competition-hero h1 {
+    font-size: 27px;
+    letter-spacing: 5px;
+  }
+  .competition-hero > span {
+    letter-spacing: 2px;
+    font-size: 11px;
+  }
+  .competition-hero span b {
+    padding: 0 5px;
+  }
+  .competition-hero small {
+    display: none;
+  }
+  .competition-section-header,
+  .dates-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .competition-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .competition-filter {
+    flex: 1;
+    justify-content: flex-end;
+  }
+  .competition-filter select {
+    width: 100%;
+    max-width: 160px;
+  }
+  .competition-checklist,
+  .competition-dates {
+    padding: 14px;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  .timeline-info-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
