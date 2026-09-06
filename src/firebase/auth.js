@@ -1,16 +1,13 @@
 import {
-  getAuth,
   signInWithEmailAndPassword,
   signOut,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
 } from "firebase/auth";
 
-import app from "./config";
-
-
-const auth = getAuth(app);
-
+// Reuse the single auth instance created in firebase.js instead of calling
+// getAuth(app) a second time here.
+import { auth } from "./firebase";
 
 export const loginUser = (email, password) => {
   return signInWithEmailAndPassword(auth, email, password);

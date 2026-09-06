@@ -2,7 +2,6 @@ import { useState } from "react";
 import "./LegacyDashboard.css";
 import DashboardAppBar from "./DashboardAppBar";
 
-
 // =====================================================
 // ICONS
 // =====================================================
@@ -57,163 +56,57 @@ function ArrowIcon() {
   );
 }
 
-
 // =====================================================
 // DRONE
 // =====================================================
 
 function Drone({ flip = false }) {
   return (
-    <div
-      className={`drone ${flip ? "flip" : ""}`}
-    >
-
-      <svg
-        viewBox="0 0 320 260"
-        className="drone-svg"
-      >
+    <div className={`drone ${flip ? "flip" : ""}`}>
+      <svg viewBox="0 0 320 260" className="drone-svg">
 
         {/* LEFT PROPELLER */}
-
         <g className="drone-line">
-
-          <ellipse
-            cx="65"
-            cy="50"
-            rx="45"
-            ry="7"
-          />
-
-          <ellipse
-            cx="65"
-            cy="50"
-            rx="7"
-            ry="45"
-          />
-
-          <circle
-            cx="65"
-            cy="50"
-            r="9"
-          />
-
+          <ellipse cx="65" cy="50" rx="45" ry="7" />
+          <ellipse cx="65" cy="50" rx="7" ry="45" />
         </g>
-
 
         {/* RIGHT PROPELLER */}
-
         <g className="drone-line">
-
-          <ellipse
-            cx="255"
-            cy="50"
-            rx="45"
-            ry="7"
-          />
-
-          <ellipse
-            cx="255"
-            cy="50"
-            rx="7"
-            ry="45"
-          />
-
-          <circle
-            cx="255"
-            cy="50"
-            r="9"
-          />
-
+          <ellipse cx="255" cy="50" rx="45" ry="7" />
+          <ellipse cx="255" cy="50" rx="7" ry="45" />
         </g>
 
-
-        {/* ARMS */}
-
+        {/* DRONE BODY */}
         <g className="drone-line">
+          <path d="M65 50 L120 100 L160 110 L200 100 L255 50" />
 
-          <path d="M65 60v45" />
-          <path d="M255 60v45" />
+          <path d="M65 50 L110 155 L140 175 L180 175 L210 155 L255 50" />
 
-          <path d="M65 98l58 35" />
-          <path d="M255 98l-58 35" />
+          <path d="M120 100 L110 155" />
+          <path d="M200 100 L210 155" />
 
-          <path d="M65 98l-35 25" />
-          <path d="M255 98l35 25" />
-
+          <path d="M140 175 L138 205" />
+          <path d="M180 175 L182 205" />
         </g>
 
-
-        {/* MOTORS */}
-
+        {/* CENTER BODY */}
         <g className="drone-line">
+          <path d="M110 105 L138 92 L182 92 L210 105" />
+          <path d="M110 105 L138 145 L182 145 L210 105" />
 
-          <rect
-            x="48"
-            y="94"
-            width="34"
-            height="22"
-            rx="5"
-          />
+          <path d="M138 145 V175" />
+          <path d="M182 145 V175" />
 
-          <rect
-            x="238"
-            y="94"
-            width="34"
-            height="22"
-            rx="5"
-          />
-
-        </g>
-
-
-        {/* MAIN BODY */}
-
-        <g className="drone-body">
-
-          <path
-            d="
-              M105 132
-              L126 109
-              L194 109
-              L215 132
-              L201 185
-              L119 185
-              Z
-            "
-          />
-
-          <path
-            d="
-              M126 109
-              L136 95
-              L184 95
-              L194 109
-            "
-          />
-
-        </g>
-
-
-        {/* BODY DETAILS */}
-
-        <g className="drone-line">
-
-          <path d="M120 138h80" />
-          <path d="M120 150h80" />
-          <path d="M120 162h80" />
-
+          {/* Lights */}
           <circle cx="138" cy="175" r="3" />
           <circle cx="150" cy="175" r="3" />
           <circle cx="162" cy="175" r="3" />
           <circle cx="174" cy="175" r="3" />
-
         </g>
 
-
         {/* CAMERA */}
-
         <g className="drone-line">
-
           <path d="M138 185v20" />
           <path d="M182 185v20" />
 
@@ -236,18 +129,15 @@ function Drone({ flip = false }) {
             cy="221"
             r="5"
           />
-
         </g>
 
       </svg>
-
     </div>
   );
 }
 
-
 // =====================================================
-// DATA
+// LOCAL STORAGE HELPERS
 // =====================================================
 
 function readStoredList(key) {
@@ -262,7 +152,6 @@ function saveList(key, list) {
   localStorage.setItem(key, JSON.stringify(list));
 }
 
-
 // =====================================================
 // TODO ITEM
 // =====================================================
@@ -270,99 +159,236 @@ function saveList(key, list) {
 function TodoItem({ task, onDelete }) {
   return (
     <div className="todo-item">
-
       <div className="todo-name">
         {task.title}
       </div>
 
       <div className="todo-date">
-
-        <span
-          className={`priority-dot ${task.priority}`}
-        ></span>
+        <span className={`priority-dot ${task.priority}`}></span>
 
         {task.date}
 
-        <button type="button" className="team-delete" onClick={() => onDelete(task.id)} aria-label={`Delete ${task.title}`}>×</button>
-
+        <button
+          type="button"
+          className="team-delete"
+          onClick={() => onDelete(task.id)}
+          aria-label={`Delete ${task.title}`}
+        >
+          ×
+        </button>
       </div>
-
     </div>
   );
 }
-
 
 // =====================================================
 // MAIN DASHBOARD
 // =====================================================
 
-export default function Dashboard() {
+export default function LegacyDashboard() {
 
-  const [todoTasks, setTodoTasks] = useState(() => readStoredList("dronaid-team-todos"));
-  const [progressTasks, setProgressTasks] = useState(() => readStoredList("dronaid-team-progress"));
-  const [dependencies, setDependencies] = useState(() => readStoredList("dronaid-team-dependencies"));
-  const [teamDeadlines, setTeamDeadlines] = useState(() => readStoredList("dronaid-team-deadlines"));
+  const [todoTasks, setTodoTasks] = useState(() =>
+    readStoredList("dronaid-team-todos")
+  );
+
+  const [progressTasks, setProgressTasks] = useState(() =>
+    readStoredList("dronaid-team-progress")
+  );
+
+  const [dependencies, setDependencies] = useState(() =>
+    readStoredList("dronaid-team-dependencies")
+  );
+
+  const [teamDeadlines, setTeamDeadlines] = useState(() =>
+    readStoredList("dronaid-team-deadlines")
+  );
+
   const [openForm, setOpenForm] = useState("");
-  const [todoForm, setTodoForm] = useState({ title: "", date: "", priority: "medium" });
+
+  const [todoForm, setTodoForm] = useState({
+    title: "",
+    date: "",
+    priority: "medium",
+  });
+
   const [progressTitle, setProgressTitle] = useState("");
-  const [dependencyForm, setDependencyForm] = useState({ title: "", member: "", date: "" });
-  const [teamDeadlineForm, setTeamDeadlineForm] = useState({ title: "", date: "" });
+
+  const [dependencyForm, setDependencyForm] = useState({
+    title: "",
+    member: "",
+    date: "",
+  });
+
+  const [teamDeadlineForm, setTeamDeadlineForm] = useState({
+    title: "",
+    date: "",
+  });
+
+  // =====================================================
+  // UPDATE LOCAL STORAGE
+  // =====================================================
 
   const updateList = (key, setter, list) => {
     setter(list);
     saveList(key, list);
   };
 
+  // =====================================================
+  // ADD TODO
+  // =====================================================
+
   const addTodo = (event) => {
     event.preventDefault();
-    if (!todoForm.title.trim() || !todoForm.date) return;
-    updateList("dronaid-team-todos", setTodoTasks, [{ ...todoForm, id: crypto.randomUUID(), title: todoForm.title.trim(), date: `Due: ${todoForm.date}` }, ...todoTasks]);
-    setTodoForm({ title: "", date: "", priority: "medium" });
+
+    if (!todoForm.title.trim() || !todoForm.date) {
+      return;
+    }
+
+    const newTask = {
+      ...todoForm,
+      id: crypto.randomUUID(),
+      title: todoForm.title.trim(),
+      date: `Due: ${todoForm.date}`,
+    };
+
+    updateList(
+      "dronaid-team-todos",
+      setTodoTasks,
+      [newTask, ...todoTasks]
+    );
+
+    setTodoForm({
+      title: "",
+      date: "",
+      priority: "medium",
+    });
+
     setOpenForm("");
   };
 
+  // =====================================================
+  // ADD PROGRESS TASK
+  // =====================================================
+
   const addProgress = (event) => {
     event.preventDefault();
-    if (!progressTitle.trim()) return;
-    updateList("dronaid-team-progress", setProgressTasks, [{ id: crypto.randomUUID(), title: progressTitle.trim() }, ...progressTasks]);
+
+    if (!progressTitle.trim()) {
+      return;
+    }
+
+    const newTask = {
+      id: crypto.randomUUID(),
+      title: progressTitle.trim(),
+    };
+
+    updateList(
+      "dronaid-team-progress",
+      setProgressTasks,
+      [newTask, ...progressTasks]
+    );
+
     setProgressTitle("");
     setOpenForm("");
   };
 
+  // =====================================================
+  // ADD DEPENDENCY
+  // =====================================================
+
   const addDependency = (event) => {
     event.preventDefault();
-    if (!dependencyForm.title.trim()) return;
-    updateList("dronaid-team-dependencies", setDependencies, [{ ...dependencyForm, id: crypto.randomUUID(), title: dependencyForm.title.trim(), member: dependencyForm.member.trim(), date: dependencyForm.date ? `Due: ${dependencyForm.date}` : "" }, ...dependencies]);
-    setDependencyForm({ title: "", member: "", date: "" });
+
+    if (!dependencyForm.title.trim()) {
+      return;
+    }
+
+    const newDependency = {
+      ...dependencyForm,
+      id: crypto.randomUUID(),
+      title: dependencyForm.title.trim(),
+      member: dependencyForm.member.trim(),
+      date: dependencyForm.date
+        ? `Due: ${dependencyForm.date}`
+        : "",
+    };
+
+    updateList(
+      "dronaid-team-dependencies",
+      setDependencies,
+      [newDependency, ...dependencies]
+    );
+
+    setDependencyForm({
+      title: "",
+      member: "",
+      date: "",
+    });
+
     setOpenForm("");
   };
+
+  // =====================================================
+  // ADD DEADLINE
+  // =====================================================
 
   const addTeamDeadline = (event) => {
     event.preventDefault();
-    if (!teamDeadlineForm.title.trim() || !teamDeadlineForm.date) return;
-    updateList("dronaid-team-deadlines", setTeamDeadlines, [{ ...teamDeadlineForm, id: crypto.randomUUID(), title: teamDeadlineForm.title.trim() }, ...teamDeadlines]);
-    setTeamDeadlineForm({ title: "", date: "" });
+
+    if (
+      !teamDeadlineForm.title.trim() ||
+      !teamDeadlineForm.date
+    ) {
+      return;
+    }
+
+    const newDeadline = {
+      ...teamDeadlineForm,
+      id: crypto.randomUUID(),
+      title: teamDeadlineForm.title.trim(),
+    };
+
+    updateList(
+      "dronaid-team-deadlines",
+      setTeamDeadlines,
+      [newDeadline, ...teamDeadlines]
+    );
+
+    setTeamDeadlineForm({
+      title: "",
+      date: "",
+    });
+
     setOpenForm("");
   };
 
-  const deleteItem = (key, setter, list, id) => updateList(key, setter, list.filter((item) => item.id !== id));
+  // =====================================================
+  // DELETE
+  // =====================================================
+
+  const deleteItem = (key, setter, list, id) => {
+    updateList(
+      key,
+      setter,
+      list.filter((item) => item.id !== id)
+    );
+  };
+
+  // =====================================================
+  // RENDER
+  // =====================================================
 
   return (
-
     <div className="dashboard">
 
-
       {/* BACKGROUND */}
-
       <div className="grid-background"></div>
 
       <div className="purple-glow glow-one"></div>
 
       <div className="purple-glow glow-two"></div>
 
-
       <DashboardAppBar />
-
 
       {/* =================================================
           MAIN CONTENT
@@ -370,13 +396,11 @@ export default function Dashboard() {
 
       <main className="main legacy-main">
 
-
         {/* =================================================
             LEFT SIDE
         ================================================= */}
 
         <aside className="left-side">
-
 
           {/* FLIGHT DATA */}
 
@@ -396,11 +420,9 @@ export default function Dashboard() {
 
           </div>
 
-
           {/* DRONE */}
 
           <Drone />
-
 
           <span className="decorative-plus plus-left">
             +
@@ -410,16 +432,13 @@ export default function Dashboard() {
             +
           </span>
 
-
         </aside>
-
 
         {/* =================================================
             CENTER
         ================================================= */}
 
         <section className="center">
-
 
           {/* GREETING */}
 
@@ -435,20 +454,17 @@ export default function Dashboard() {
 
           </div>
 
-
           {/* =================================================
               CARDS
           ================================================= */}
 
           <div className="cards">
 
-
             {/* =================================================
                 TO DO CARD
             ================================================= */}
 
             <div className="card">
-
 
               <div className="card-heading">
 
@@ -460,50 +476,130 @@ export default function Dashboard() {
                   To do ({todoTasks.length})
                 </span>
 
-                <button type="button" className="team-add" onClick={() => setOpenForm(openForm === "todo" ? "" : "todo")}>+ Add</button>
+                <button
+                  type="button"
+                  className="team-add"
+                  onClick={() =>
+                    setOpenForm(
+                      openForm === "todo"
+                        ? ""
+                        : "todo"
+                    )
+                  }
+                >
+                  + Add
+                </button>
 
               </div>
 
-              {openForm === "todo" && <form className="team-form" onSubmit={addTodo}><input placeholder="Task name" value={todoForm.title} onChange={(event) => setTodoForm({ ...todoForm, title: event.target.value })} required /><input type="date" aria-label="Task due date" value={todoForm.date} onChange={(event) => setTodoForm({ ...todoForm, date: event.target.value })} required /><select aria-label="Task priority" value={todoForm.priority} onChange={(event) => setTodoForm({ ...todoForm, priority: event.target.value })}><option value="urgent">Urgent</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select><button type="submit">Save</button></form>}
+              {openForm === "todo" && (
+                <form
+                  className="team-form"
+                  onSubmit={addTodo}
+                >
 
+                  <input
+                    placeholder="Task name"
+                    value={todoForm.title}
+                    onChange={(event) =>
+                      setTodoForm({
+                        ...todoForm,
+                        title: event.target.value,
+                      })
+                    }
+                    required
+                  />
+
+                  <input
+                    type="date"
+                    aria-label="Task due date"
+                    value={todoForm.date}
+                    onChange={(event) =>
+                      setTodoForm({
+                        ...todoForm,
+                        date: event.target.value,
+                      })
+                    }
+                    required
+                  />
+
+                  <select
+                    aria-label="Task priority"
+                    value={todoForm.priority}
+                    onChange={(event) =>
+                      setTodoForm({
+                        ...todoForm,
+                        priority: event.target.value,
+                      })
+                    }
+                  >
+                    <option value="urgent">
+                      Urgent
+                    </option>
+
+                    <option value="high">
+                      High
+                    </option>
+
+                    <option value="medium">
+                      Medium
+                    </option>
+
+                    <option value="low">
+                      Low
+                    </option>
+                  </select>
+
+                  <button type="submit">
+                    Save
+                  </button>
+
+                </form>
+              )}
 
               <div className="task-list">
 
-                {todoTasks.length ? todoTasks.map(
-                  (task, index) => (
-
+                {todoTasks.length ? (
+                  todoTasks.map((task, index) => (
                     <TodoItem
                       key={task.id || index}
                       task={task}
-                      onDelete={(id) => deleteItem("dronaid-team-todos", setTodoTasks, todoTasks, id)}
+                      onDelete={(id) =>
+                        deleteItem(
+                          "dronaid-team-todos",
+                          setTodoTasks,
+                          todoTasks,
+                          id
+                        )
+                      }
                     />
-
-                  )
-                ) : <p className="team-empty">No tasks yet.</p>}
+                  ))
+                ) : (
+                  <p className="team-empty">
+                    No tasks yet.
+                  </p>
+                )}
 
               </div>
 
-
-              <button className="view-all">
-
+              <button
+                type="button"
+                className="view-all"
+              >
                 <span>
                   View All Tasks
                 </span>
 
                 <ArrowIcon />
-
               </button>
 
-
             </div>
-
 
             {/* =================================================
                 IN PROGRESS CARD
             ================================================= */}
 
             <div className="card">
-
 
               <div className="card-heading">
 
@@ -515,18 +611,50 @@ export default function Dashboard() {
                   In Progress ({progressTasks.length})
                 </span>
 
-                <button type="button" className="team-add" onClick={() => setOpenForm(openForm === "progress" ? "" : "progress")}>+ Add</button>
+                <button
+                  type="button"
+                  className="team-add"
+                  onClick={() =>
+                    setOpenForm(
+                      openForm === "progress"
+                        ? ""
+                        : "progress"
+                    )
+                  }
+                >
+                  + Add
+                </button>
 
               </div>
 
-              {openForm === "progress" && <form className="team-form" onSubmit={addProgress}><input placeholder="Task name" value={progressTitle} onChange={(event) => setProgressTitle(event.target.value)} required /><button type="submit">Save</button></form>}
+              {openForm === "progress" && (
+                <form
+                  className="team-form"
+                  onSubmit={addProgress}
+                >
 
+                  <input
+                    placeholder="Task name"
+                    value={progressTitle}
+                    onChange={(event) =>
+                      setProgressTitle(
+                        event.target.value
+                      )
+                    }
+                    required
+                  />
+
+                  <button type="submit">
+                    Save
+                  </button>
+
+                </form>
+              )}
 
               <div className="task-list">
 
-                {progressTasks.length ? progressTasks.map(
-                  (task, index) => (
-
+                {progressTasks.length ? (
+                  progressTasks.map((task, index) => (
                     <div
                       className="progress-item"
                       key={task.id || index}
@@ -534,36 +662,52 @@ export default function Dashboard() {
 
                       {task.title || task}
 
-                      <button type="button" className="team-delete" onClick={() => deleteItem("dronaid-team-progress", setProgressTasks, progressTasks, task.id)} aria-label={`Delete ${task.title || task}`}>×</button>
+                      <button
+                        type="button"
+                        className="team-delete"
+                        onClick={() =>
+                          deleteItem(
+                            "dronaid-team-progress",
+                            setProgressTasks,
+                            progressTasks,
+                            task.id
+                          )
+                        }
+                        aria-label={`Delete ${
+                          task.title || task
+                        }`}
+                      >
+                        ×
+                      </button>
 
                     </div>
-
-                  )
-                ) : <p className="team-empty">No tasks in progress.</p>}
+                  ))
+                ) : (
+                  <p className="team-empty">
+                    No tasks in progress.
+                  </p>
+                )}
 
               </div>
 
-
-              <button className="view-all">
-
+              <button
+                type="button"
+                className="view-all"
+              >
                 <span>
                   View All Tasks
                 </span>
 
                 <ArrowIcon />
-
               </button>
 
-
             </div>
-
 
             {/* =================================================
                 DEPENDENT CARD
             ================================================= */}
 
             <div className="card">
-
 
               <div className="card-heading">
 
@@ -575,68 +719,141 @@ export default function Dashboard() {
                   Dependent ({dependencies.length})
                 </span>
 
-                <button type="button" className="team-add" onClick={() => setOpenForm(openForm === "dependency" ? "" : "dependency")}>+ Add</button>
+                <button
+                  type="button"
+                  className="team-add"
+                  onClick={() =>
+                    setOpenForm(
+                      openForm === "dependency"
+                        ? ""
+                        : "dependency"
+                    )
+                  }
+                >
+                  + Add
+                </button>
 
               </div>
 
-              {openForm === "dependency" && <form className="team-form" onSubmit={addDependency}><input placeholder="Dependency name" value={dependencyForm.title} onChange={(event) => setDependencyForm({ ...dependencyForm, title: event.target.value })} required /><input placeholder="Member" value={dependencyForm.member} onChange={(event) => setDependencyForm({ ...dependencyForm, member: event.target.value })} /><input type="date" aria-label="Dependency due date" value={dependencyForm.date} onChange={(event) => setDependencyForm({ ...dependencyForm, date: event.target.value })} /><button type="submit">Save</button></form>}
+              {openForm === "dependency" && (
+                <form
+                  className="team-form"
+                  onSubmit={addDependency}
+                >
 
+                  <input
+                    placeholder="Dependency name"
+                    value={dependencyForm.title}
+                    onChange={(event) =>
+                      setDependencyForm({
+                        ...dependencyForm,
+                        title: event.target.value,
+                      })
+                    }
+                    required
+                  />
+
+                  <input
+                    placeholder="Member"
+                    value={dependencyForm.member}
+                    onChange={(event) =>
+                      setDependencyForm({
+                        ...dependencyForm,
+                        member: event.target.value,
+                      })
+                    }
+                  />
+
+                  <input
+                    type="date"
+                    aria-label="Dependency due date"
+                    value={dependencyForm.date}
+                    onChange={(event) =>
+                      setDependencyForm({
+                        ...dependencyForm,
+                        date: event.target.value,
+                      })
+                    }
+                  />
+
+                  <button type="submit">
+                    Save
+                  </button>
+
+                </form>
+              )}
 
               <div className="dependency-list">
 
-                {dependencies.length ? dependencies.map(
-                  (dependency, index) => (
+                {dependencies.length ? (
+                  dependencies.map(
+                    (dependency, index) => (
+                      <div
+                        className="dependency-item"
+                        key={
+                          dependency.id || index
+                        }
+                      >
 
-                    <div
-                      className="dependency-item"
-                      key={dependency.id || index}
-                    >
+                        <div className="waiting">
+                          Waiting for:
+                        </div>
 
-                      <div className="waiting">
-                        Waiting for:
+                        <div className="dependency-title">
+                          {dependency.title}
+                        </div>
+
+                        <div className="dependency-member">
+                          {dependency.member}
+                        </div>
+
+                        <div className="dependency-date">
+                          {dependency.date}
+                        </div>
+
+                        <button
+                          type="button"
+                          className="team-delete dependency-delete"
+                          onClick={() =>
+                            deleteItem(
+                              "dronaid-team-dependencies",
+                              setDependencies,
+                              dependencies,
+                              dependency.id
+                            )
+                          }
+                          aria-label={`Delete ${dependency.title}`}
+                        >
+                          ×
+                        </button>
+
                       </div>
-
-                      <div className="dependency-title">
-                        {dependency.title}
-                      </div>
-
-                      <div className="dependency-member">
-                        {dependency.member}
-                      </div>
-
-                      <div className="dependency-date">
-                        {dependency.date}
-                      </div>
-
-                      <button type="button" className="team-delete dependency-delete" onClick={() => deleteItem("dronaid-team-dependencies", setDependencies, dependencies, dependency.id)} aria-label={`Delete ${dependency.title}`}>×</button>
-
-                    </div>
-
+                    )
                   )
-                ) : <p className="team-empty">No dependencies yet.</p>}
+                ) : (
+                  <p className="team-empty">
+                    No dependencies yet.
+                  </p>
+                )}
 
               </div>
 
-
-              <button className="view-all">
-
+              <button
+                type="button"
+                className="view-all"
+              >
                 <span>
                   View All Dependencies
                 </span>
 
                 <ArrowIcon />
-
               </button>
-
 
             </div>
 
-
           </div>
 
-
         </section>
-
 
         {/* =================================================
             RIGHT SIDE
@@ -644,18 +861,13 @@ export default function Dashboard() {
 
         <aside className="right-side">
 
-
           {/* PROFILE */}
 
           <div className="profile-card">
 
-
             <div className="profile-symbol">
-
               <UserIcon />
-
             </div>
-
 
             <div className="profile-info">
 
@@ -676,9 +888,7 @@ export default function Dashboard() {
 
             </div>
 
-
           </div>
-
 
           {/* PRIORITY */}
 
@@ -687,7 +897,6 @@ export default function Dashboard() {
             <h2>
               Priority Order
             </h2>
-
 
             <div className="priority-list">
 
@@ -713,43 +922,133 @@ export default function Dashboard() {
 
             </div>
 
-
           </div>
-
 
           {/* DEADLINES */}
 
           <div className="side-card deadlines">
 
-            <div className="deadline-heading"><h2>Upcoming Deadlines</h2><button type="button" className="team-add" onClick={() => setOpenForm(openForm === "deadline" ? "" : "deadline")}>+ Add</button></div>
+            <div className="deadline-heading">
 
-            {openForm === "deadline" && <form className="team-form" onSubmit={addTeamDeadline}><input placeholder="Deadline name" value={teamDeadlineForm.title} onChange={(event) => setTeamDeadlineForm({ ...teamDeadlineForm, title: event.target.value })} required /><input type="date" aria-label="Deadline date" value={teamDeadlineForm.date} onChange={(event) => setTeamDeadlineForm({ ...teamDeadlineForm, date: event.target.value })} required /><button type="submit">Save</button></form>}
+              <h2>
+                Upcoming Deadlines
+              </h2>
 
-
-            <div className="deadline-list">
-
-              {teamDeadlines.length ? teamDeadlines.map((deadline, index) => <div className="deadline" key={deadline.id || index}><div>• &nbsp; {deadline.title}</div><span>{deadline.date}</span><button type="button" className="team-delete" onClick={() => deleteItem("dronaid-team-deadlines", setTeamDeadlines, teamDeadlines, deadline.id)} aria-label={`Delete ${deadline.title}`}>×</button></div>) : <p className="team-empty">No upcoming deadlines.</p>}
-
+              <button
+                type="button"
+                className="team-add"
+                onClick={() =>
+                  setOpenForm(
+                    openForm === "deadline"
+                      ? ""
+                      : "deadline"
+                  )
+                }
+              >
+                + Add
+              </button>
 
             </div>
 
+            {openForm === "deadline" && (
+              <form
+                className="team-form"
+                onSubmit={addTeamDeadline}
+              >
 
-            <button className="view-all">
+                <input
+                  placeholder="Deadline name"
+                  value={teamDeadlineForm.title}
+                  onChange={(event) =>
+                    setTeamDeadlineForm({
+                      ...teamDeadlineForm,
+                      title: event.target.value,
+                    })
+                  }
+                  required
+                />
 
+                <input
+                  type="date"
+                  aria-label="Deadline date"
+                  value={teamDeadlineForm.date}
+                  onChange={(event) =>
+                    setTeamDeadlineForm({
+                      ...teamDeadlineForm,
+                      date: event.target.value,
+                    })
+                  }
+                  required
+                />
+
+                <button type="submit">
+                  Save
+                </button>
+
+              </form>
+            )}
+
+            <div className="deadline-list">
+
+              {teamDeadlines.length ? (
+                teamDeadlines.map(
+                  (deadline, index) => (
+                    <div
+                      className="deadline"
+                      key={
+                        deadline.id || index
+                      }
+                    >
+
+                      <div>
+                        • &nbsp; {deadline.title}
+                      </div>
+
+                      <span>
+                        {deadline.date}
+                      </span>
+
+                      <button
+                        type="button"
+                        className="team-delete"
+                        onClick={() =>
+                          deleteItem(
+                            "dronaid-team-deadlines",
+                            setTeamDeadlines,
+                            teamDeadlines,
+                            deadline.id
+                          )
+                        }
+                        aria-label={`Delete ${deadline.title}`}
+                      >
+                        ×
+                      </button>
+
+                    </div>
+                  )
+                )
+              ) : (
+                <p className="team-empty">
+                  No upcoming deadlines.
+                </p>
+              )}
+
+            </div>
+
+            <button
+              type="button"
+              className="view-all"
+            >
               <span>
                 View All
               </span>
 
               <ArrowIcon />
-
             </button>
-
 
           </div>
 
-
         </aside>
-
 
         {/* RIGHT DRONE */}
 
@@ -758,7 +1057,6 @@ export default function Dashboard() {
           <Drone flip />
 
         </div>
-
 
       </main>
 

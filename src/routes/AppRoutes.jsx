@@ -7,6 +7,9 @@ import Dashboard from "../components/dashboard/Dashboard";
 import LegacyDashboard from "../components/dashboard/LegacyDashboard";
 import CompetitionPage from "../pages/Competition/CompetitionPage";
 
+import MemberPage from "../pages/Member/MemberPage";
+import AccessDenied from "../components/common/AccessDenied";
+
 import ProtectedRoute from "./ProtectedRoute";
 
 export default function AppRoutes() {
@@ -14,7 +17,7 @@ export default function AppRoutes() {
     <BrowserRouter>
       <Routes>
 
-        {/* Website opens → Login */}
+        {/* HOME */}
         <Route
           path="/"
           element={<Navigate to="/login" replace />}
@@ -32,7 +35,7 @@ export default function AppRoutes() {
           element={<SignUpPage />}
         />
 
-        {/* AFTER LOGIN → OUR NEW DASHBOARD */}
+        {/* MAIN DASHBOARD */}
         <Route
           path="/dashboard"
           element={
@@ -42,6 +45,7 @@ export default function AppRoutes() {
           }
         />
 
+        {/* GENERAL */}
         <Route
           path="/general"
           element={
@@ -51,6 +55,7 @@ export default function AppRoutes() {
           }
         />
 
+        {/* WORKSPACE DASHBOARD */}
         <Route
           path="/workspace-dashboard"
           element={
@@ -60,6 +65,7 @@ export default function AppRoutes() {
           }
         />
 
+        {/* TEAM */}
         <Route
           path="/team"
           element={
@@ -69,6 +75,7 @@ export default function AppRoutes() {
           }
         />
 
+        {/* COMPETITION */}
         <Route
           path="/competition"
           element={
@@ -78,7 +85,23 @@ export default function AppRoutes() {
           }
         />
 
-        {/* Anything else → Login */}
+        {/* MEMBER PAGE */}
+        <Route
+          path="/member/:memberId"
+          element={
+            <ProtectedRoute>
+              <MemberPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ACCESS DENIED */}
+        <Route
+          path="/access-denied"
+          element={<AccessDenied />}
+        />
+
+        {/* UNKNOWN ROUTE */}
         <Route
           path="*"
           element={<Navigate to="/login" replace />}
