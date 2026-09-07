@@ -1,6 +1,14 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import "./LegacyDashboard.css";
 import DashboardAppBar from "./DashboardAppBar";
+import { useAuthContext } from "../../context/AuthContext";
+import {
+  useMemberTasks,
+  useSubsystemMemberTasks,
+  useCreateTask,
+  updateTaskStatus,
+  deleteTask,
+} from "../../hooks/useTasks";
 
 // =====================================================
 // ICONS
@@ -137,7 +145,9 @@ function Drone({ flip = false }) {
 }
 
 // =====================================================
-// LOCAL STORAGE HELPERS
+// LOCAL STORAGE HELPERS (still used for team-wide /team
+// and /workspace-dashboard views, and for the Dependent
+// card, which has no Firebase structure yet)
 // =====================================================
 
 function readStoredList(key) {
@@ -150,6 +160,14 @@ function readStoredList(key) {
 
 function saveList(key, list) {
   localStorage.setItem(key, JSON.stringify(list));
+}
+
+// Firestore Timestamp, JS Date, or "YYYY-MM-DD" string -> "Due: 04 Sep 2026".
+function formatDueDate(value) {
+  if (!value) return "No due date";
+  const date = value?.toDate ? value.toDate() : value instanceof Date ? value : new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return "No due date";
+  return `Due: ${date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}`;
 }
 
 // =====================================================
@@ -181,12 +199,100 @@ function TodoItem({ task, onDelete }) {
   );
 }
 
+// Same visual shape as TodoItem, but for a Firestore task (real
+// priority/dueDate fields, and a delete button that's hidden entirely
+// when the viewer isn't allowed to delete it rather than a no-op click).
+function FirebaseTodoItem({ task, canDelete, onDelete }) {
+  return (
+    <div className="todo-item">
+      <div className="todo-name">
+        {task.title}
+      </div>
+
+      <div className="todo-date">
+        <span className={`priority-dot ${(task.priority || "medium").toLowerCase()}`}></span>
+
+        {formatDueDate(task.dueDate)}
+
+        {canDelete && (
+          <button
+            type="button"
+            className="team-delete"
+            onClick={() => onDelete(task)}
+            aria-label={`Delete ${task.title}`}
+          >
+            ×
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // =====================================================
 // MAIN DASHBOARD
 // =====================================================
 
-export default function LegacyDashboard() {
+// When rendered from a specific member's page (via MemberPage.jsx),
+// memberId + memberProfile are provided and the greeting, profile card,
+// To do / In Progress cards, and Upcoming Deadlines become Firebase-backed
+// and scoped to that one member. When rendered with no props (the /team
+// and /workspace-dashboard routes), every one of those sections falls back
+// to the original, unchanged local-storage-backed team-wide behaviour.
+export default function LegacyDashboard({ memberId, memberProfile }) {
+  const isMemberMode = Boolean(memberId);
 
+  // ---- VIEWER (the logged-in person looking at this page) ----
+  const { currentUser, userProfile, isAdmin } = useAuthContext();
+  const createFirebaseTask = useCreateTask({ userProfile, currentUser });
+
+  const isOwnPage = isMemberMode && currentUser?.uid === memberId;
+
+  // A regular member viewing a TEAMMATE's page can't use the same query an
+  // Admin or the member themself can (see subscribeToSubsystemMemberTasks
+  // in firestore.js for why) — pick whichever query shape is actually
+  // authorized for this viewer/target combination. Both hooks are always
+  // called (React hooks rules); whichever one isn't relevant for this
+  // viewer is passed a null argument and returns an empty, inert result.
+  const ownOrAdminTasks = useMemberTasks(isMemberMode && (isOwnPage || isAdmin) ? memberId : null);
+  const teammateTasks = useSubsystemMemberTasks(
+    isMemberMode && !isOwnPage && !isAdmin ? userProfile?.subsystem : null,
+    isMemberMode && !isOwnPage && !isAdmin ? memberId : null
+  );
+
+  const memberTasks = isOwnPage || isAdmin ? ownOrAdminTasks.tasks : teammateTasks.tasks;
+  const memberTasksLoading = isOwnPage || isAdmin ? ownOrAdminTasks.loading : teammateTasks.loading;
+  const memberTasksError = isOwnPage || isAdmin ? ownOrAdminTasks.error : teammateTasks.error;
+
+  // Task creation/update logic already used elsewhere in this project only
+  // recognises these exact status strings: a newly-created task always
+  // starts as "Ongoing", and cycling moves it through "In Progress" and
+  // "Done". "Ongoing" is this project's "not started yet" bucket, so it's
+  // what the "To do" card maps to — no new status value is introduced.
+  const firebaseTodoTasks = useMemo(
+    () => memberTasks.filter((task) => task.status === "Ongoing"),
+    [memberTasks]
+  );
+  const firebaseProgressTasks = useMemo(
+    () => memberTasks.filter((task) => task.status === "In Progress"),
+    [memberTasks]
+  );
+
+  // Derived directly from the same task data — never a separate collection.
+  // Only tasks that are still open (Ongoing or In Progress) and have a due
+  // date are shown, nearest date first.
+  const firebaseDeadlines = useMemo(() => {
+    return memberTasks
+      .filter((task) => (task.status === "Ongoing" || task.status === "In Progress") && task.dueDate)
+      .slice()
+      .sort((a, b) => (a.dueDate?.toMillis?.() || 0) - (b.dueDate?.toMillis?.() || 0));
+  }, [memberTasks]);
+
+  const canManageFirebaseTask = (task) =>
+    isAdmin || task.createdBy === currentUser?.uid || task.assignedTo === currentUser?.uid;
+
+  // ---- LOCAL, team-wide state (unchanged) — used when NOT viewing a
+  // specific member's page ----
   const [todoTasks, setTodoTasks] = useState(() =>
     readStoredList("dronaid-team-todos")
   );
@@ -195,12 +301,20 @@ export default function LegacyDashboard() {
     readStoredList("dronaid-team-progress")
   );
 
-  const [dependencies, setDependencies] = useState(() =>
-    readStoredList("dronaid-team-dependencies")
-  );
-
   const [teamDeadlines, setTeamDeadlines] = useState(() =>
     readStoredList("dronaid-team-deadlines")
+  );
+
+  // Dependencies have no Firebase structure anywhere in this project, so
+  // they stay local-storage-backed in every mode, per-member-scoped when
+  // viewing a specific member's page so different members' pages don't
+  // share one browser's local list.
+  const dependencyStorageKey = isMemberMode
+    ? `dronaid-member-dependencies-${memberId}`
+    : "dronaid-team-dependencies";
+
+  const [dependencies, setDependencies] = useState(() =>
+    readStoredList(dependencyStorageKey)
   );
 
   const [openForm, setOpenForm] = useState("");
@@ -244,18 +358,27 @@ export default function LegacyDashboard() {
       return;
     }
 
-    const newTask = {
-      ...todoForm,
-      id: crypto.randomUUID(),
-      title: todoForm.title.trim(),
-      date: `Due: ${todoForm.date}`,
-    };
+    if (isMemberMode) {
+      createFirebaseTask({
+        title: todoForm.title.trim(),
+        assignedTo: memberId,
+        priority: todoForm.priority.charAt(0).toUpperCase() + todoForm.priority.slice(1),
+        dueDate: todoForm.date,
+      }).catch((err) => console.error("Error creating task:", err));
+    } else {
+      const newTask = {
+        ...todoForm,
+        id: crypto.randomUUID(),
+        title: todoForm.title.trim(),
+        date: `Due: ${todoForm.date}`,
+      };
 
-    updateList(
-      "dronaid-team-todos",
-      setTodoTasks,
-      [newTask, ...todoTasks]
-    );
+      updateList(
+        "dronaid-team-todos",
+        setTodoTasks,
+        [newTask, ...todoTasks]
+      );
+    }
 
     setTodoForm({
       title: "",
@@ -277,23 +400,36 @@ export default function LegacyDashboard() {
       return;
     }
 
-    const newTask = {
-      id: crypto.randomUUID(),
-      title: progressTitle.trim(),
-    };
+    if (isMemberMode) {
+      // createTask always starts a task as "Ongoing" (see firestore.js) —
+      // immediately bump it to "In Progress" using the existing status
+      // update function rather than inventing a second creation path.
+      createFirebaseTask({
+        title: progressTitle.trim(),
+        assignedTo: memberId,
+        priority: "Medium",
+      })
+        .then((docRef) => updateTaskStatus(docRef.id, "In Progress"))
+        .catch((err) => console.error("Error creating task:", err));
+    } else {
+      const newTask = {
+        id: crypto.randomUUID(),
+        title: progressTitle.trim(),
+      };
 
-    updateList(
-      "dronaid-team-progress",
-      setProgressTasks,
-      [newTask, ...progressTasks]
-    );
+      updateList(
+        "dronaid-team-progress",
+        setProgressTasks,
+        [newTask, ...progressTasks]
+      );
+    }
 
     setProgressTitle("");
     setOpenForm("");
   };
 
   // =====================================================
-  // ADD DEPENDENCY
+  // ADD DEPENDENCY (unchanged local behaviour)
   // =====================================================
 
   const addDependency = (event) => {
@@ -314,7 +450,7 @@ export default function LegacyDashboard() {
     };
 
     updateList(
-      "dronaid-team-dependencies",
+      dependencyStorageKey,
       setDependencies,
       [newDependency, ...dependencies]
     );
@@ -329,7 +465,8 @@ export default function LegacyDashboard() {
   };
 
   // =====================================================
-  // ADD DEADLINE
+  // ADD DEADLINE (local/team mode only — Firebase mode
+  // derives deadlines automatically from tasks)
   // =====================================================
 
   const addTeamDeadline = (event) => {
@@ -363,7 +500,7 @@ export default function LegacyDashboard() {
   };
 
   // =====================================================
-  // DELETE
+  // DELETE (local)
   // =====================================================
 
   const deleteItem = (key, setter, list, id) => {
@@ -373,6 +510,26 @@ export default function LegacyDashboard() {
       list.filter((item) => item.id !== id)
     );
   };
+
+  // =====================================================
+  // DELETE (Firebase task)
+  // =====================================================
+
+  const deleteFirebaseTask = (task) => {
+    if (!canManageFirebaseTask(task)) return;
+    deleteTask(task.id).catch((err) => console.error("Error deleting task:", err));
+  };
+
+  // =====================================================
+  // DISPLAY VALUES
+  // =====================================================
+
+  const greetingName = isMemberMode ? memberProfile?.name || "Member" : "Name";
+  const displaySubsystem = isMemberMode ? memberProfile?.subsystem || "—" : "Avionics";
+  const displayRole = isMemberMode ? memberProfile?.role || "—" : "Subsystem Lead";
+
+  const todoCount = isMemberMode ? firebaseTodoTasks.length : todoTasks.length;
+  const progressCount = isMemberMode ? firebaseProgressTasks.length : progressTasks.length;
 
   // =====================================================
   // RENDER
@@ -445,7 +602,7 @@ export default function LegacyDashboard() {
           <div className="greeting">
 
             <h1>
-              Hi, Name
+              Hi, {greetingName}
             </h1>
 
             <p>
@@ -473,7 +630,7 @@ export default function LegacyDashboard() {
                 </span>
 
                 <span>
-                  To do ({todoTasks.length})
+                  To do ({todoCount})
                 </span>
 
                 <button
@@ -559,7 +716,26 @@ export default function LegacyDashboard() {
 
               <div className="task-list">
 
-                {todoTasks.length ? (
+                {isMemberMode ? (
+                  memberTasksLoading ? (
+                    <p className="team-empty">Loading tasks...</p>
+                  ) : memberTasksError ? (
+                    <p className="team-empty">Unable to load tasks right now.</p>
+                  ) : firebaseTodoTasks.length ? (
+                    firebaseTodoTasks.map((task) => (
+                      <FirebaseTodoItem
+                        key={task.id}
+                        task={task}
+                        canDelete={canManageFirebaseTask(task)}
+                        onDelete={deleteFirebaseTask}
+                      />
+                    ))
+                  ) : (
+                    <p className="team-empty">
+                      No tasks yet.
+                    </p>
+                  )
+                ) : todoTasks.length ? (
                   todoTasks.map((task, index) => (
                     <TodoItem
                       key={task.id || index}
@@ -608,7 +784,7 @@ export default function LegacyDashboard() {
                 </span>
 
                 <span>
-                  In Progress ({progressTasks.length})
+                  In Progress ({progressCount})
                 </span>
 
                 <button
@@ -653,7 +829,34 @@ export default function LegacyDashboard() {
 
               <div className="task-list">
 
-                {progressTasks.length ? (
+                {isMemberMode ? (
+                  memberTasksLoading ? (
+                    <p className="team-empty">Loading tasks...</p>
+                  ) : memberTasksError ? (
+                    <p className="team-empty">Unable to load tasks right now.</p>
+                  ) : firebaseProgressTasks.length ? (
+                    firebaseProgressTasks.map((task) => (
+                      <div className="progress-item" key={task.id}>
+                        {task.title}
+
+                        {canManageFirebaseTask(task) && (
+                          <button
+                            type="button"
+                            className="team-delete"
+                            onClick={() => deleteFirebaseTask(task)}
+                            aria-label={`Delete ${task.title}`}
+                          >
+                            ×
+                          </button>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="team-empty">
+                      No tasks in progress.
+                    </p>
+                  )
+                ) : progressTasks.length ? (
                   progressTasks.map((task, index) => (
                     <div
                       className="progress-item"
@@ -704,7 +907,8 @@ export default function LegacyDashboard() {
             </div>
 
             {/* =================================================
-                DEPENDENT CARD
+                DEPENDENT CARD (still local — no Firebase
+                dependency structure exists in this project)
             ================================================= */}
 
             <div className="card">
@@ -816,7 +1020,7 @@ export default function LegacyDashboard() {
                           className="team-delete dependency-delete"
                           onClick={() =>
                             deleteItem(
-                              "dronaid-team-dependencies",
+                              dependencyStorageKey,
                               setDependencies,
                               dependencies,
                               dependency.id
@@ -873,17 +1077,17 @@ export default function LegacyDashboard() {
 
               <div>
                 <span>Name:</span>
-                <strong>Name</strong>
+                <strong>{greetingName}</strong>
               </div>
 
               <div>
                 <span>Subsystem:</span>
-                <strong>Avionics</strong>
+                <strong>{displaySubsystem}</strong>
               </div>
 
               <div>
                 <span>Role:</span>
-                <strong>Subsystem Lead</strong>
+                <strong>{displayRole}</strong>
               </div>
 
             </div>
@@ -934,23 +1138,28 @@ export default function LegacyDashboard() {
                 Upcoming Deadlines
               </h2>
 
-              <button
-                type="button"
-                className="team-add"
-                onClick={() =>
-                  setOpenForm(
-                    openForm === "deadline"
-                      ? ""
-                      : "deadline"
-                  )
-                }
-              >
-                + Add
-              </button>
+              {/* Firebase mode derives deadlines automatically from To do
+                  / In Progress tasks, so there is nothing to manually add
+                  there — the +Add form only applies to team/local mode. */}
+              {!isMemberMode && (
+                <button
+                  type="button"
+                  className="team-add"
+                  onClick={() =>
+                    setOpenForm(
+                      openForm === "deadline"
+                        ? ""
+                        : "deadline"
+                    )
+                  }
+                >
+                  + Add
+                </button>
+              )}
 
             </div>
 
-            {openForm === "deadline" && (
+            {!isMemberMode && openForm === "deadline" && (
               <form
                 className="team-form"
                 onSubmit={addTeamDeadline}
@@ -990,7 +1199,29 @@ export default function LegacyDashboard() {
 
             <div className="deadline-list">
 
-              {teamDeadlines.length ? (
+              {isMemberMode ? (
+                memberTasksLoading ? (
+                  <p className="team-empty">Loading deadlines...</p>
+                ) : memberTasksError ? (
+                  <p className="team-empty">Unable to load deadlines right now.</p>
+                ) : firebaseDeadlines.length ? (
+                  firebaseDeadlines.map((task) => (
+                    <div className="deadline" key={task.id}>
+                      <div>
+                        • &nbsp; {task.title}
+                      </div>
+
+                      <span>
+                        {formatDueDate(task.dueDate)}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="team-empty">
+                    No upcoming deadlines.
+                  </p>
+                )
+              ) : teamDeadlines.length ? (
                 teamDeadlines.map(
                   (deadline, index) => (
                     <div

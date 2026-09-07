@@ -3,6 +3,7 @@ import {
   subscribeToOngoingSubsystemTasks,
   subscribeToAllOngoingTasks,
   subscribeToMemberTasks,
+  subscribeToSubsystemMemberTasks,
   createTask as createTaskDoc,
   updateTaskStatus as updateTaskStatusDoc,
   deleteTask as deleteTaskDoc,
@@ -67,6 +68,37 @@ export function useMemberTasks(uid) {
     );
     return unsubscribe;
   }, [uid]);
+
+  return { tasks, loading, error };
+}
+
+// Live list of one member's tasks, as visible to a same-subsystem teammate
+// (not the member themself, not an Admin). See subscribeToSubsystemMemberTasks
+// for why the query has to be shaped this way.
+export function useSubsystemMemberTasks(subsystem, memberId) {
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- resetting loading/error before starting a new subscription
+    setLoading(true);
+    setError(null);
+    const unsubscribe = subscribeToSubsystemMemberTasks(
+      subsystem,
+      memberId,
+      (data) => {
+        setTasks(data);
+        setLoading(false);
+      },
+      (err) => {
+        console.error("Error loading teammate's tasks:", err);
+        setError(err);
+        setLoading(false);
+      }
+    );
+    return unsubscribe;
+  }, [subsystem, memberId]);
 
   return { tasks, loading, error };
 }
