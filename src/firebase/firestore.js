@@ -438,3 +438,30 @@ export const subscribeToCompetitionChecklistTasks = (onNext, onError) => {
     onError
   );
 };
+// =====================================================
+// ONE MEMBER'S TASKS, VISIBLE TO A SAME-SUBSYSTEM TEAMMATE
+// =====================================================
+//
+// subscribeToMemberTasks(uid) only satisfies the Firestore rule when the
+// caller IS uid (or an Admin) — the rule can't verify an arbitrary
+// assignedTo query against someone else's data. For a teammate viewing
+// another member's page, the query has to also filter by subsystem so it
+// structurally matches the rule's `resource.data.subsystem == mySubsystem()`
+// branch; filtering by assignedTo on top of that (client-side-safe since
+// it only narrows further) picks out just this one member's tasks.
+export const subscribeToSubsystemMemberTasks = (subsystem, memberId, onNext, onError) => {
+  if (!subsystem || !memberId) {
+    onNext([]);
+    return () => {};
+  }
+  const q = query(
+    collection(db, "tasks"),
+    where("subsystem", "==", subsystem),
+    where("assignedTo", "==", memberId)
+  );
+  return onSnapshot(
+    q,
+    (snap) => onNext(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+    onError
+  );
+};
