@@ -1,6 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import LoginPage from "../pages/Login/LoginPage";
+import RoleSelectionPage from "../pages/RoleSelection/RoleSelectionPage";
+import ExecutiveBoardPage from "../pages/ExecutiveBoard/ExecutiveBoardPage";
+import ExecutiveBoardMembersPage from "../pages/ExecutiveBoardMembers/ExecutiveBoardMembersPage";
+import ExecutiveBoardMemberSignupPage from "../pages/ExecutiveBoardMemberSignup/ExecutiveBoardMemberSignupPage";
 import SignUpPage from "../pages/SignUp/SignUpPage";
 
 import Dashboard from "../components/dashboard/Dashboard";
@@ -20,13 +24,38 @@ export default function AppRoutes() {
         {/* HOME */}
         <Route
           path="/"
-          element={<Navigate to="/login" replace />}
+          element={<RoleSelectionPage />}
         />
 
         {/* LOGIN */}
         <Route
           path="/login"
           element={<LoginPage />}
+        />
+
+        {/* EXECUTIVE BOARD PORTAL */}
+        <Route
+          path="/executive-board"
+          element={<ExecutiveBoardPage />}
+        />
+
+        {/* EXECUTIVE BOARD MEMBER MANAGEMENT */}
+        <Route
+          path="/executive-board/members"
+          element={
+            <ProtectedRoute requireAdmin>
+              <ExecutiveBoardMembersPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/executive-board/members/create"
+          element={
+            <ProtectedRoute requireAdmin>
+              <ExecutiveBoardMemberSignupPage />
+            </ProtectedRoute>
+          }
         />
 
         {/* SIGN UP */}
@@ -38,6 +67,16 @@ export default function AppRoutes() {
         {/* MAIN DASHBOARD */}
         <Route
           path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* EB SUBSYSTEM VIEWS */}
+        <Route
+          path="/subsystem/:subsystem"
           element={
             <ProtectedRoute>
               <Dashboard />

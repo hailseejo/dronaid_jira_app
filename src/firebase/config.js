@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyCME146Op6-PjPOJw0IvBEDjCshLFEfCYY",
   authDomain: "dronaid-jira-app.firebaseapp.com",
   projectId: "dronaid-jira-app",

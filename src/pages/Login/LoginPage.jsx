@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { loginUser } from "../../firebase/auth";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
+import { loginUser, resetUserPassword } from "../../firebase/auth";
 import "./LoginPage.css";
 
 export default function LoginPage() {
@@ -9,14 +9,19 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
+  const [resetMessage, setResetMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isMemberLogin = searchParams.get("role") === "member";
+  const redirectPath = searchParams.get("redirect");
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     setError("");
+    setResetMessage("");
     setLoading(true);
 
     try {
@@ -25,7 +30,11 @@ export default function LoginPage() {
         password
       );
 
-      navigate("/dashboard");
+      navigate(
+        redirectPath && redirectPath.startsWith("/") && !redirectPath.startsWith("//")
+          ? redirectPath
+          : "/dashboard"
+      );
     } catch (err) {
       console.error(
         "Firebase Detailed Login Error:",
@@ -33,12 +42,34 @@ export default function LoginPage() {
       );
 
       setError(
-        `[${err.code || "ERROR"}]: ${
-          err.message || "Failed to sign in"
-        }`
+        err.code === "auth/invalid-credential"
+          ? "Incorrect email or password. Use the same email and password from EB signup, or reset your password below."
+          : `[${err.code || "ERROR"}]: ${err.message || "Failed to sign in"}`
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePasswordReset = async (event) => {
+    event.preventDefault();
+    setError("");
+    setResetMessage("");
+
+    if (!email.trim()) {
+      setError("Enter your email address first, then select Forgot password.");
+      return;
+    }
+
+    try {
+      await resetUserPassword(email.trim());
+      setResetMessage("Password reset email sent. Check your inbox.");
+    } catch (err) {
+      setError(
+        err.code === "auth/user-not-found"
+          ? "No Firebase account exists for that email address."
+          : err.message || "Unable to send the password reset email."
+      );
     }
   };
 
@@ -99,6 +130,14 @@ export default function LoginPage() {
       </div>
 
       <div className="login-card">
+
+        <button
+          type="button"
+          className="back-button"
+          onClick={() => navigate(-1)}
+        >
+          <span aria-hidden="true">←</span> GO BACK
+        </button>
 
         <div className="logo-container">
 
@@ -164,6 +203,12 @@ export default function LoginPage() {
         {error && (
           <div className="error-badge">
             {error}
+          </div>
+        )}
+
+        {resetMessage && (
+          <div className="reset-message" role="status">
+            {resetMessage}
           </div>
         )}
 
@@ -284,12 +329,13 @@ export default function LoginPage() {
 
 
           <div className="forgot-link-container">
-            <a
-              href="#forgot"
+            <button
+              type="button"
               className="forgot-link"
+              onClick={handlePasswordReset}
             >
               Forgot password?
-            </a>
+            </button>
           </div>
 
 
@@ -335,12 +381,14 @@ export default function LoginPage() {
         </form>
 
 
-        <div className="signup-footer">
-          Don't have an account?{" "}
-          <Link to="/signup">
-            Sign up
-          </Link>
-        </div>
+        {!isMemberLogin && (
+          <div className="signup-footer">
+            Don't have an account?{" "}
+            <Link to="/signup">
+              Sign up
+            </Link>
+          </div>
+        )}
 
       </div>
 

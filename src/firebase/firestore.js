@@ -26,13 +26,14 @@ import { db } from "./firebase";
 // Firestore Security Rules also enforce this.
 export const createUserProfile = async (
   uid,
-  { name, email, subsystem, role }
+  { name, email, subsystem, role, ebAuthorizationCode }
 ) => {
   return setDoc(doc(db, "users", uid), {
     name,
     email,
     subsystem,
     role,
+    ...(ebAuthorizationCode ? { ebAuthorizationCode } : {}),
   });
 };
 

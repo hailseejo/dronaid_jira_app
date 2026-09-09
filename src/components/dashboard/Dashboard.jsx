@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Bell, Plus, Trash2, Trophy, UserRound } from "lucide-react";
 import DashboardAppBar from "./DashboardAppBar";
+import Sidebar from "../layout/Sidebar";
 import "./Dashboard.css";
 import DashboardExtras from "./DashboardExtras";
 import { useAuthContext } from "../../context/AuthContext";
@@ -58,11 +60,13 @@ function CompetitionCard({ competitions, onAdd, onDelete, onOpen, formOpen, setF
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { subsystem: selectedSubsystem } = useParams();
   const { currentUser, userProfile, isAdmin } = useAuthContext();
 
-  const scope = isAdmin ? "all" : "subsystem";
-  const { members: people, loading: membersLoading } = useMembers(userProfile?.subsystem, { scope });
-  const { tasks, loading: tasksLoading } = useSubsystemTasks(userProfile?.subsystem, { scope });
+  const scope = isAdmin && !selectedSubsystem ? "all" : "subsystem";
+  const activeSubsystem = isAdmin ? selectedSubsystem || null : userProfile?.subsystem;
+  const { members: people, loading: membersLoading } = useMembers(activeSubsystem, { scope });
+  const { tasks, loading: tasksLoading } = useSubsystemTasks(activeSubsystem, { scope });
   const createTask = useCreateTask({ userProfile, currentUser });
 
   const { competitions } = useCompetitions();
@@ -128,9 +132,12 @@ export default function Dashboard() {
     deleteCompetition(id).catch((err) => setNotice(err.message || "Could not delete competition."));
   };
 
-  const subsystemLabel = isAdmin ? "All Subsystems" : userProfile?.subsystem || "";
+  const subsystemLabel = isAdmin
+    ? selectedSubsystem || "All Subsystems"
+    : userProfile?.subsystem || "";
 
   return <div className="reference-dashboard">
+    <Sidebar />
     <DashboardAppBar profileOpen={profileOpen} setProfileOpen={setProfileOpen} />
     <Telemetry side="left" /><Telemetry side="right" /><Drone className="drone-left" /><Drone className="drone-right" />
     <div className="circuit circuit-left" /><div className="circuit circuit-right" />

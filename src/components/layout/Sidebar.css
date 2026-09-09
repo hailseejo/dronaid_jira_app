@@ -1,5 +1,5 @@
 .sidebar {
-  width: 72px;
+  width: 218px;
   flex-shrink: 0;
 
   display: flex;
@@ -15,17 +15,62 @@
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   gap: var(--space-md);
 }
 
+.sidebar-subsystems {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  width: 100%;
+  padding: var(--space-sm) 12px 0;
+  border-top: 1px solid var(--border-light);
+}
+
+.sidebar-subsystems-label {
+  padding: 0 10px 4px;
+  color: var(--text-muted);
+  font-size: 7px;
+  letter-spacing: 0.7px;
+  text-align: left;
+}
+
+.sidebar-subsystem-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 30px;
+  padding: 5px 10px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.sidebar-subsystem-link:hover,
+.sidebar-subsystem-link.active {
+  border-color: var(--purple-light);
+  background: rgba(139, 77, 255, 0.12);
+  color: var(--purple-light);
+}
+
 .sidebar-link {
-  width: 44px;
+  width: auto;
   height: 44px;
 
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 12px;
+  margin: 0 12px;
+  padding: 0 12px;
 
   border: 1px solid transparent;
   border-radius: var(--radius-md);
@@ -35,6 +80,13 @@
   cursor: pointer;
 
   transition: all var(--transition-fast);
+}
+
+.sidebar-link span {
+  flex: 1;
+  text-align: left;
+  font-size: 12px;
+  letter-spacing: 0.3px;
 }
 
 .sidebar-link:hover {
@@ -49,7 +101,8 @@
 }
 
 .sidebar-logout {
-  align-self: center;
+  align-self: stretch;
+  margin: 0 12px;
   color: var(--danger);
 }
 
@@ -59,10 +112,17 @@
 
 @media (max-width: 700px) {
   .sidebar {
-    width: 56px;
+    width: 64px;
   }
   .sidebar-link {
     width: 38px;
     height: 38px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  .sidebar-link span,
+  .sidebar-subsystems-label,
+  .sidebar-subsystem-link {
+    display: none;
   }
 }
