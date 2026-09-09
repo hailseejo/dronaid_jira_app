@@ -184,7 +184,8 @@
 .workspace-announcement-list strong,.workspace-announcement-list small { display:block; }
 .workspace-announcement-list strong { color:#e6e1ed; font:12px "Space Grotesk"; }
 .workspace-announcement-list small { margin-top:3px; color:#9289aa; font:11px "Rajdhani"; }
-.workspace-announcement-list button { color:#9e8eb8; border:0; background:transparent; cursor:pointer; }
+.workspace-announcement-list button { display:grid; place-items:center; color:#9e8eb8; border:0; background:transparent; cursor:pointer; opacity:1; }
+.workspace-announcement-list .announcement-delete-button { width:24px; height:24px; }
 .workspace-announcement-list button:hover { color:#ff7c9b; }
 .workspace-announcement-list svg { width:14px; }
 .announcement-widget-notice { margin-top:8px; padding:5px 0; color:#b9f5d6; border:0; background:transparent; font:11px "Rajdhani"; text-align:left; cursor:pointer; }

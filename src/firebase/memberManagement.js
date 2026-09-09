@@ -60,15 +60,20 @@ export const createMemberAccount = async (memberEmail, password) => {
     );
     if (!member) throw new Error("That member is not in the official roster.");
 
-    const subsystemLabel = member.roleAndSubsystem.split("•").pop()?.trim();
-    const subsystem = {
+    const subsystemLabels = member.roleAndSubsystem
+      .split("•").pop()?.split(/[,/]/).map((label) => label.trim()) || [];
+    const subsystemMap = {
       AIA: "AI and Automation",
       ECS: "Electronics",
       MAD: "MAD",
       Research: "Research",
       Management: "Management",
       Software: "Software",
-    }[subsystemLabel] || "Management";
+    };
+    const managedSubsystems = subsystemLabels
+      .map((label) => subsystemMap[label])
+      .filter(Boolean);
+    const subsystem = managedSubsystems[0] || "Management";
 
     try {
       const credential = await createUserWithEmailAndPassword(
@@ -82,6 +87,7 @@ export const createMemberAccount = async (memberEmail, password) => {
         email: member.email,
         role: "Member",
         subsystem,
+        ...(managedSubsystems.length > 0 ? { managedSubsystems } : {}),
         hierarchyTier: member.hierarchyTier,
         rosterRole: member.roleAndSubsystem,
         ...(member.memberId ? { memberId: member.memberId } : {}),

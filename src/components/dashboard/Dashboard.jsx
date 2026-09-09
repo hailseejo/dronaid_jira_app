@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { Bell, Plus, Trash2, Trophy, UserRound } from "lucide-react";
 import DashboardAppBar from "./DashboardAppBar";
 import Sidebar from "../layout/Sidebar";
@@ -10,6 +10,7 @@ import { useAuthContext } from "../../context/AuthContext";
 import { useMembers } from "../../hooks/useMembers";
 import { useSubsystemTasks, useCreateTask, updateTaskStatus, deleteTask } from "../../hooks/useTasks";
 import { useCompetitions, createCompetition, deleteCompetition } from "../../hooks/useCompetitions";
+import { SUBSYSTEMS } from "../../constants/subsystems";
 
 function formatDate(value) {
   if (!value) return "Not set";
@@ -61,10 +62,27 @@ function CompetitionCard({ competitions, onAdd, onDelete, onOpen, formOpen, setF
 export default function Dashboard() {
   const navigate = useNavigate();
   const { subsystem: selectedSubsystem } = useParams();
+  const location = useLocation();
   const { currentUser, userProfile, isAdmin } = useAuthContext();
 
-  const scope = isAdmin && !selectedSubsystem ? "all" : "subsystem";
-  const activeSubsystem = isAdmin ? selectedSubsystem || null : userProfile?.subsystem;
+  const routeSubsystem = selectedSubsystem || location.pathname.split("/").pop();
+  const normalizedSubsystem = SUBSYSTEMS.find(
+    (subsystem) => subsystem.toLowerCase() === decodeURIComponent(routeSubsystem || "").toLowerCase()
+  );
+
+  const scope = isAdmin && !normalizedSubsystem ? "all" : "subsystem";
+  const isMahek = userProfile?.email?.toLowerCase() === "mahekg819@gmail.com";
+  const managedSubsystems = isMahek
+    ? ["AI and Automation", "Software"]
+    : userProfile?.managedSubsystems?.length
+      ? userProfile.managedSubsystems
+      : [userProfile?.subsystem].filter(Boolean);
+  const canViewSelectedSubsystem =
+    isAdmin ||
+    (userProfile?.hierarchyTier === "Subsystem Heads" && Boolean(normalizedSubsystem));
+  const activeSubsystem = canViewSelectedSubsystem
+    ? normalizedSubsystem || null
+    : userProfile?.subsystem;
   const { members: people, loading: membersLoading } = useMembers(activeSubsystem, { scope });
   const { tasks, loading: tasksLoading } = useSubsystemTasks(activeSubsystem, { scope });
   const createTask = useCreateTask({ userProfile, currentUser });
@@ -205,7 +223,7 @@ export default function Dashboard() {
           ))}
         </div>
       </section>
-      <DashboardExtras />
+      <DashboardExtras activeSubsystem={activeSubsystem} />
     </main>
     {notice && <button className="dashboard-toast" onClick={() => setNotice("")}>{notice}<span>x</span></button>}
   </div>;

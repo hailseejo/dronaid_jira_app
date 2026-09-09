@@ -324,12 +324,13 @@ export const subscribeToCalendarTasks = (onNext, onError) => {
 // ANNOUNCEMENTS (Dashboard widget and Announcements page)
 // =====================================================
 
-export const createAnnouncement = ({ title, message, priority, category, createdBy, createdByName }) =>
+export const createAnnouncement = ({ title, message, priority, category, subsystem, createdBy, createdByName }) =>
   addDoc(collection(db, "announcements"), {
     title,
     message: message || "",
     priority: priority || "",
     category: category || "",
+    subsystem: subsystem || null,
     createdBy,
     createdByName: createdByName || "Executive Board",
     createdAt: serverTimestamp(),
