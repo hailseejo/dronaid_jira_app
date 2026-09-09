@@ -110,9 +110,22 @@ export function useCreateTask({ userProfile, currentUser }) {
   return (fields) =>
     createTaskDoc({
       ...fields,
-      subsystem: userProfile?.subsystem,
+      subsystem: fields.subsystem || userProfile?.subsystem,
       createdBy: currentUser?.uid,
     });
+}
+
+export function canManageSubsystemTasks(userProfile, subsystem) {
+  if (!userProfile || !subsystem) return false;
+  if (userProfile.role === "EB") return true;
+  if (userProfile.hierarchyTier !== "Subsystem Heads") return false;
+
+  const email = userProfile.email?.toLowerCase();
+  if (email === "mahekg819@gmail.com" && ["AI and Automation", "Software"].includes(subsystem)) {
+    return true;
+  }
+
+  return userProfile.subsystem === subsystem || userProfile.managedSubsystems?.includes(subsystem);
 }
 
 export const updateTaskStatus = updateTaskStatusDoc;
