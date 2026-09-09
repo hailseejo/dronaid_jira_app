@@ -108,7 +108,7 @@ const isRegistered = async (email) => {
 };
 
 const subsystemFromRole = (roleAndSubsystem) => {
-  const label = roleAndSubsystem.split("•").pop()?.trim() || "Management";
+  const labels = roleAndSubsystem.split("•").pop()?.split(/[,/]/).map((label) => label.trim()) || [];
   const subsystemMap = {
     AIA: "AI and Automation",
     ECS: "Electronics",
@@ -117,7 +117,7 @@ const subsystemFromRole = (roleAndSubsystem) => {
     Management: "Management",
     Software: "Software",
   };
-  return subsystemMap[label] || "Management";
+  return labels.map((label) => subsystemMap[label]).filter(Boolean);
 };
 
 exports.getMemberRoster = onCall(async (request) => {
@@ -169,7 +169,8 @@ exports.createMemberAccount = onCall(async (request) => {
       name: rosterMember.fullName,
       email: rosterMember.email,
       role: "Member",
-      subsystem: subsystemFromRole(rosterMember.roleAndSubsystem),
+      subsystem: subsystemFromRole(rosterMember.roleAndSubsystem)[0] || "Management",
+      managedSubsystems: subsystemFromRole(rosterMember.roleAndSubsystem),
       hierarchyTier: rosterMember.hierarchyTier,
       rosterRole: rosterMember.roleAndSubsystem,
       ...(rosterMember.memberId ? { memberId: rosterMember.memberId } : {}),

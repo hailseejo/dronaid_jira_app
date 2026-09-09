@@ -12,7 +12,16 @@ const NAV_ITEMS = [
 ];
 
 export default function Sidebar() {
-  const { logout, isAdmin } = useAuth();
+  const { logout, isAdmin, userProfile } = useAuth();
+  const isMahek = userProfile?.email?.toLowerCase() === "mahekg819@gmail.com";
+  const managedSubsystems = isMahek
+    ? ["AI and Automation", "Software"]
+    : userProfile?.managedSubsystems?.length
+      ? userProfile.managedSubsystems
+      : userProfile?.hierarchyTier === "Subsystem Heads"
+        ? [userProfile.subsystem]
+        : [];
+  const visibleSubsystems = isAdmin ? SUBSYSTEMS : managedSubsystems;
 
   const handleLogout = async () => {
     try {
@@ -31,10 +40,10 @@ export default function Sidebar() {
             <span>{label}</span>
           </NavLink>
         ))}
-        {isAdmin && (
+        {visibleSubsystems.length > 0 && (
           <div className="sidebar-subsystems" aria-label="Subsystems">
             <span className="sidebar-subsystems-label">SUBSYSTEMS</span>
-            {SUBSYSTEMS.map((subsystem) => (
+            {visibleSubsystems.map((subsystem) => (
               <NavLink
                 key={subsystem}
                 to={`/subsystem/${encodeURIComponent(subsystem)}`}

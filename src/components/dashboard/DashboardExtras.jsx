@@ -34,10 +34,19 @@ function timeAgo(createdAt) {
   return `${days}d ago`;
 }
 
-export default function DashboardExtras() {
+export default function DashboardExtras({ activeSubsystem }) {
   const { currentUser, userProfile } = useAuthContext();
-  const canManageAnnouncements = userProfile?.role === "EB";
-  const isAdmin = canManageAnnouncements;
+  const isEb = userProfile?.role === "EB" || userProfile?.role === "Admin";
+  const isMahek = userProfile?.email?.toLowerCase() === "mahekg819@gmail.com";
+  const isSubsystemHead =
+    userProfile?.hierarchyTier === "Subsystem Heads" &&
+    Boolean(activeSubsystem) &&
+    (userProfile?.subsystem === activeSubsystem ||
+      userProfile?.managedSubsystems?.includes(activeSubsystem) ||
+      (isMahek && activeSubsystem === "Software"));
+  const canManageAnnouncements = isEb || isSubsystemHead;
+  const canDeleteAnnouncement = (item) =>
+    isEb || (isSubsystemHead && (!item.subsystem || item.subsystem === activeSubsystem));
   const [cursor, setCursor] = useState(() => new Date());
   const [selected, setSelected] = useState(() => new Date());
   const [newAnnouncement, setNewAnnouncement] = useState("");
@@ -47,6 +56,12 @@ export default function DashboardExtras() {
 
   const { tasks: calendarTasks, loading: calendarLoading } = useCalendarTasks();
   const { announcements, loading: announcementsLoading } = useAnnouncements();
+  const visibleAnnouncements = useMemo(
+    () => activeSubsystem
+      ? announcements.filter((item) => !item.subsystem || item.subsystem === activeSubsystem)
+      : announcements.filter((item) => !item.subsystem),
+    [activeSubsystem, announcements]
+  );
 
   const days = useMemo(() => monthDays(cursor), [cursor]);
   const label = cursor.toLocaleDateString("en-US", { month: "long", year: "numeric" });
@@ -75,7 +90,12 @@ export default function DashboardExtras() {
     setAnnouncementSaving(true);
     setAnnouncementNotice("");
     try {
-      await createAnnouncement({ title, createdBy: currentUser?.uid, createdByName: userProfile?.name });
+      await createAnnouncement({
+        title,
+        subsystem: activeSubsystem || null,
+        createdBy: currentUser?.uid,
+        createdByName: userProfile?.name,
+      });
       setNewAnnouncement("");
       setAnnouncementNotice("Announcement posted.");
     } catch (err) {
@@ -146,17 +166,19 @@ export default function DashboardExtras() {
       )}
     </section>
     <section className="workspace-card announcement-workspace">
-      <header><h2><Megaphone /> Announcements</h2><span>{announcements.length} update{announcements.length === 1 ? "" : "s"}</span></header>
-      {isAdmin && <form className="announcement-add" onSubmit={addAnnouncement}><input value={newAnnouncement} onChange={(event) => setNewAnnouncement(event.target.value)} placeholder="Write an announcement" aria-label="New announcement" /><button type="submit" aria-label="Add announcement" disabled={announcementSaving}>{announcementSaving ? "..." : <Plus />}</button></form>}
+      <header><h2><Megaphone /> Announcements</h2><span>{visibleAnnouncements.length} update{visibleAnnouncements.length === 1 ? "" : "s"}</span></header>
+      {canManageAnnouncements && <form className="announcement-add" onSubmit={addAnnouncement}><input value={newAnnouncement} onChange={(event) => setNewAnnouncement(event.target.value)} placeholder="Write an announcement" aria-label="New announcement" /><button type="submit" aria-label="Add announcement" disabled={announcementSaving}>{announcementSaving ? "..." : <Plus />}</button></form>}
       {announcementNotice && <button type="button" className="announcement-widget-notice" onClick={() => setAnnouncementNotice("")}>{announcementNotice}</button>}
       <div className="workspace-announcement-list">
         {announcementsLoading && <p className="empty-widget">Loading announcements...</p>}
-        {!announcementsLoading && announcements.length === 0 && <p className="empty-widget">No announcements yet.</p>}
-        {announcements.map((item) => (
+        {!announcementsLoading && visibleAnnouncements.length === 0 && <p className="empty-widget">No announcements yet.</p>}
+        {visibleAnnouncements.map((item) => (
           <article key={item.id}>
             <i />
             <div><strong>{item.title}</strong><small>{timeAgo(item.createdAt)}</small></div>
-            {isAdmin && <button
+            {canDeleteAnnouncement(item) && <button
+              type="button"
+              className="announcement-delete-button"
               onClick={() => deleteAnnouncement(item.id).catch((err) => console.error("Error deleting announcement:", err))}
               aria-label={`Delete ${item.title}`}
             >
