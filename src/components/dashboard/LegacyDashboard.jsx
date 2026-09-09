@@ -6,6 +6,7 @@ import {
   useMemberTasks,
   useSubsystemMemberTasks,
   useCreateTask,
+  canManageSubsystemTasks,
   updateTaskStatus,
   deleteTask,
 } from "../../hooks/useTasks";
@@ -254,10 +255,11 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
   // authorized for this viewer/target combination. Both hooks are always
   // called (React hooks rules); whichever one isn't relevant for this
   // viewer is passed a null argument and returns an empty, inert result.
+  const canManageMemberTasks = canManageSubsystemTasks(userProfile, memberProfile?.subsystem);
   const ownOrAdminTasks = useMemberTasks(isMemberMode && (isOwnPage || isAdmin) ? memberId : null);
   const teammateTasks = useSubsystemMemberTasks(
-    isMemberMode && !isOwnPage && !isAdmin ? userProfile?.subsystem : null,
-    isMemberMode && !isOwnPage && !isAdmin ? memberId : null
+    isMemberMode && !isOwnPage && !isAdmin && canManageMemberTasks ? memberProfile?.subsystem : null,
+    isMemberMode && !isOwnPage && !isAdmin && canManageMemberTasks ? memberId : null
   );
 
   const memberTasks = isOwnPage || isAdmin ? ownOrAdminTasks.tasks : teammateTasks.tasks;
@@ -289,7 +291,8 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
   }, [memberTasks]);
 
   const canManageFirebaseTask = (task) =>
-    isAdmin || task.createdBy === currentUser?.uid || task.assignedTo === currentUser?.uid;
+    canManageSubsystemTasks(userProfile, task.subsystem || memberProfile?.subsystem);
+  const canCreateMemberTask = canManageSubsystemTasks(userProfile, memberProfile?.subsystem);
 
   // ---- LOCAL, team-wide state (unchanged) — used when NOT viewing a
   // specific member's page ----
@@ -362,6 +365,7 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
       createFirebaseTask({
         title: todoForm.title.trim(),
         assignedTo: memberId,
+        subsystem: memberProfile?.subsystem,
         priority: todoForm.priority.charAt(0).toUpperCase() + todoForm.priority.slice(1),
         dueDate: todoForm.date,
       }).catch((err) => console.error("Error creating task:", err));
@@ -407,6 +411,7 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
       createFirebaseTask({
         title: progressTitle.trim(),
         assignedTo: memberId,
+        subsystem: memberProfile?.subsystem,
         priority: "Medium",
       })
         .then((docRef) => updateTaskStatus(docRef.id, "In Progress"))
@@ -633,7 +638,7 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
                   To do ({todoCount})
                 </span>
 
-                <button
+                {(!isMemberMode || canCreateMemberTask) && <button
                   type="button"
                   className="team-add"
                   onClick={() =>
@@ -645,7 +650,7 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
                   }
                 >
                   + Add
-                </button>
+                </button>}
 
               </div>
 
@@ -787,7 +792,7 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
                   In Progress ({progressCount})
                 </span>
 
-                <button
+                {(!isMemberMode || canCreateMemberTask) && <button
                   type="button"
                   className="team-add"
                   onClick={() =>
@@ -799,7 +804,7 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
                   }
                 >
                   + Add
-                </button>
+                </button>}
 
               </div>
 

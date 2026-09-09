@@ -21,6 +21,10 @@ service cloud.firestore {
       return isSignedIn() && myProfile().role == "EB";
     }
 
+    function isSubsystemHead() {
+      return isSignedIn() && myProfile().hierarchyTier == "Subsystem Heads";
+    }
+
     function isMahek() {
       return isSignedIn() &&
         myProfile().email == "mahekg819@gmail.com" &&
@@ -37,6 +41,10 @@ service cloud.firestore {
       return myProfile().subsystem == subsystem ||
         (myProfile().managedSubsystems is list && subsystem in myProfile().managedSubsystems) ||
         (isMahek() && subsystem == "Software");
+    }
+
+    function canManageTasks(subsystem) {
+      return isEB() || (isSubsystemHead() && managesSubsystem(subsystem));
     }
 
     function mySubsystem() {
@@ -108,8 +116,7 @@ service cloud.firestore {
         (resource.data.subsystem == mySubsystem() && resource.data.status == "Ongoing") ||
         (
           myProfile().hierarchyTier == "Subsystem Heads" &&
-          canManageSubsystem(resource.data.subsystem) &&
-          resource.data.status == "Ongoing"
+          canManageSubsystem(resource.data.subsystem)
         ) ||
         resource.data.assignedTo == request.auth.uid ||
         resource.data.createdBy == request.auth.uid
@@ -117,19 +124,10 @@ service cloud.firestore {
 
       // subsystem and createdBy must match the caller's own authenticated
       // profile — never a value handed in from a form.
-      allow create: if isSignedIn() && (
-        isAdmin() ||
-        (
-          request.resource.data.subsystem == mySubsystem() &&
-          request.resource.data.createdBy == request.auth.uid
-        )
-      );
+      allow create: if canManageTasks(request.resource.data.subsystem)
+        && request.resource.data.createdBy == request.auth.uid;
 
-      allow update, delete: if isSignedIn() && (
-        isAdmin() ||
-        resource.data.createdBy == request.auth.uid ||
-        resource.data.assignedTo == request.auth.uid
-      );
+      allow update, delete: if canManageTasks(resource.data.subsystem);
     }
 
     match /announcements/{announcementId} {

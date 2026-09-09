@@ -8,7 +8,7 @@ import "./Dashboard.css";
 import DashboardExtras from "./DashboardExtras";
 import { useAuthContext } from "../../context/AuthContext";
 import { useMembers } from "../../hooks/useMembers";
-import { useSubsystemTasks, useCreateTask, updateTaskStatus, deleteTask } from "../../hooks/useTasks";
+import { useSubsystemTasks, useCreateTask, updateTaskStatus, deleteTask, canManageSubsystemTasks } from "../../hooks/useTasks";
 import { useCompetitions, createCompetition, deleteCompetition } from "../../hooks/useCompetitions";
 import { SUBSYSTEMS } from "../../constants/subsystems";
 
@@ -70,16 +70,10 @@ export default function Dashboard() {
     (subsystem) => subsystem.toLowerCase() === decodeURIComponent(routeSubsystem || "").toLowerCase()
   );
 
-  const scope = isAdmin && !normalizedSubsystem ? "all" : "subsystem";
-  const isMahek = userProfile?.email?.toLowerCase() === "mahekg819@gmail.com";
-  const managedSubsystems = isMahek
-    ? ["AI and Automation", "Software"]
-    : userProfile?.managedSubsystems?.length
-      ? userProfile.managedSubsystems
-      : [userProfile?.subsystem].filter(Boolean);
+  const isEb = userProfile?.role === "EB";
+  const scope = isEb && !normalizedSubsystem ? "all" : "subsystem";
   const canViewSelectedSubsystem =
-    isAdmin ||
-    (userProfile?.hierarchyTier === "Subsystem Heads" && Boolean(normalizedSubsystem));
+    isEb || canManageSubsystemTasks(userProfile, normalizedSubsystem);
   const activeSubsystem = canViewSelectedSubsystem
     ? normalizedSubsystem || null
     : userProfile?.subsystem;
@@ -93,6 +87,7 @@ export default function Dashboard() {
   const [newAssignee, setNewAssignee] = useState("");
   const [newPriority, setNewPriority] = useState("Medium");
   const [newDueDate, setNewDueDate] = useState("");
+  const [taskSaving, setTaskSaving] = useState(false);
   const [newCompetitionName, setNewCompetitionName] = useState("");
   const [newCompetitionStart, setNewCompetitionStart] = useState("");
   const [competitionFormOpen, setCompetitionFormOpen] = useState(false);
@@ -105,8 +100,7 @@ export default function Dashboard() {
     return map;
   }, [people]);
 
-  const canManageTask = (task) =>
-    isAdmin || task.createdBy === currentUser?.uid || task.assignedTo === currentUser?.uid;
+  const canManageTask = (task) => canManageSubsystemTasks(userProfile, task.subsystem);
 
   const cycleStatus = (task) => {
     if (!canManageTask(task)) return;
@@ -119,18 +113,35 @@ export default function Dashboard() {
     deleteTask(task.id).catch((err) => setNotice(err.message || "Could not delete task."));
   };
 
-  const addTask = (event) => {
+  const addTask = async (event) => {
     event.preventDefault();
-    if (!newTaskTitle.trim()) return;
-    createTask({
-      title: newTaskTitle.trim(),
-      assignedTo: newAssignee || null,
-      priority: newPriority,
-      dueDate: newDueDate || null,
-    }).catch((err) => setNotice(err.message || "Could not create task."));
-    setNewTaskTitle("");
-    setNewAssignee("");
-    setNewDueDate("");
+    if (!newTaskTitle.trim() || taskSaving) return;
+    const assignees = newAssignee === "__all__"
+      ? people.map((person) => person.id)
+      : [newAssignee || null];
+    if (assignees.length === 0) {
+      setNotice("No members found in this subsystem.");
+      return;
+    }
+
+    setTaskSaving(true);
+    try {
+      await Promise.all(assignees.map((assignedTo) => createTask({
+        title: newTaskTitle.trim(),
+        assignedTo,
+        subsystem: activeSubsystem,
+        priority: newPriority,
+        dueDate: newDueDate || null,
+      })));
+      setNewTaskTitle("");
+      setNewAssignee("");
+      setNewDueDate("");
+      setNotice(newAssignee === "__all__" ? `Task assigned to ${assignees.length} members.` : "Task added.");
+    } catch (err) {
+      setNotice(err.message || "Could not create task.");
+    } finally {
+      setTaskSaving(false);
+    }
   };
 
   const addCompetition = (event) => {
@@ -189,16 +200,17 @@ export default function Dashboard() {
       <section className="tasks-card">
         <header className="tasks-heading">
           <h2><Bell /> Ongoing Tasks Overview</h2>
-          <form className="task-add" onSubmit={addTask}>
+          {canManageSubsystemTasks(userProfile, activeSubsystem) && <form className="task-add" onSubmit={addTask}>
             <input value={newTaskTitle} onChange={(event) => setNewTaskTitle(event.target.value)} placeholder="Add a task" aria-label="New task" required />
             <select className="task-member-input" value={newAssignee} onChange={(event) => setNewAssignee(event.target.value)} aria-label="Assignee">
               <option value="">Unassigned</option>
+              {activeSubsystem && <option value="__all__">All members in {activeSubsystem}</option>}
               {people.map((person) => <option key={person.id} value={person.id}>{person.name}</option>)}
             </select>
             <select value={newPriority} onChange={(event) => setNewPriority(event.target.value)} aria-label="Task priority"><option>High</option><option>Medium</option><option>Low</option></select>
             <input className="task-due-input" type="date" value={newDueDate} onChange={(event) => setNewDueDate(event.target.value)} aria-label="Task due date" />
-            <button type="submit" aria-label="Add task" title="Add task"><Plus /></button>
-          </form>
+            <button type="submit" aria-label="Add task" title="Add task" disabled={taskSaving}>{taskSaving ? "..." : <Plus />}</button>
+          </form>}
         </header>
         <div className="task-table">
           <div className="task-row task-head"><span>Task</span><span>Assigned To</span><span>Priority</span><span>Status</span><span>Due Date</span><span className="task-action-head" /></div>
