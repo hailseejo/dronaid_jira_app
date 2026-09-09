@@ -321,13 +321,17 @@ export const subscribeToCalendarTasks = (onNext, onError) => {
 };
 
 // =====================================================
-// ANNOUNCEMENTS (Dashboard announcements widget)
+// ANNOUNCEMENTS (Dashboard widget and Announcements page)
 // =====================================================
 
-export const createAnnouncement = ({ title, createdBy }) =>
+export const createAnnouncement = ({ title, message, priority, category, createdBy, createdByName }) =>
   addDoc(collection(db, "announcements"), {
     title,
+    message: message || "",
+    priority: priority || "",
+    category: category || "",
     createdBy,
+    createdByName: createdByName || "Executive Board",
     createdAt: serverTimestamp(),
   });
 

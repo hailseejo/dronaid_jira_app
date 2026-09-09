@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Home, LayoutGrid, LogOut } from "lucide-react";
+import { Home, LayoutGrid, LogOut, Megaphone } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { SUBSYSTEMS } from "../../constants/subsystems";
 import "./Sidebar.css";
@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { to: "/general", label: "General", icon: Home, end: true },
   { to: "/competition", label: "Competition", icon: LayoutGrid },
   { to: "/dashboard", label: "Dashboard", icon: LayoutGrid },
+  { to: "/announcements", label: "Announcements", icon: Megaphone },
 ];
 
 export default function Sidebar() {

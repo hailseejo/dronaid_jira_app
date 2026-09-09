@@ -187,6 +187,7 @@
 .workspace-announcement-list button { color:#9e8eb8; border:0; background:transparent; cursor:pointer; }
 .workspace-announcement-list button:hover { color:#ff7c9b; }
 .workspace-announcement-list svg { width:14px; }
+.announcement-widget-notice { margin-top:8px; padding:5px 0; color:#b9f5d6; border:0; background:transparent; font:11px "Rajdhani"; text-align:left; cursor:pointer; }
 
 /* Responsive Media Queries */
 @media (max-width:1300px) {

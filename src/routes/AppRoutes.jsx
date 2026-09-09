@@ -10,6 +10,7 @@ import SignUpPage from "../pages/SignUp/SignUpPage";
 import Dashboard from "../components/dashboard/Dashboard";
 import LegacyDashboard from "../components/dashboard/LegacyDashboard";
 import CompetitionPage from "../pages/Competition/CompetitionPage";
+import AnnouncementsPage from "../pages/Announcements/AnnouncementsPage";
 
 import MemberPage from "../pages/Member/MemberPage";
 import AccessDenied from "../components/common/AccessDenied";
@@ -120,6 +121,15 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute>
               <CompetitionPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/announcements"
+          element={
+            <ProtectedRoute>
+              <AnnouncementsPage />
             </ProtectedRoute>
           }
         />

@@ -17,6 +17,10 @@ service cloud.firestore {
       return isSignedIn() && myProfile().role in ["Admin", "EB"];
     }
 
+    function isEB() {
+      return isSignedIn() && myProfile().role == "EB";
+    }
+
     function mySubsystem() {
       return myProfile().subsystem;
     }
@@ -99,6 +103,17 @@ service cloud.firestore {
         resource.data.createdBy == request.auth.uid ||
         resource.data.assignedTo == request.auth.uid
       );
+    }
+
+    match /announcements/{announcementId} {
+      allow read: if isSignedIn();
+      allow create: if isEB()
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.createdAt == request.time;
+      allow delete: if isEB();
+      allow update: if false;
     }
   }
 }

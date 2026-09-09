@@ -35,11 +35,15 @@ function timeAgo(createdAt) {
 }
 
 export default function DashboardExtras() {
-  const { currentUser } = useAuthContext();
+  const { currentUser, userProfile } = useAuthContext();
+  const canManageAnnouncements = userProfile?.role === "EB";
+  const isAdmin = canManageAnnouncements;
   const [cursor, setCursor] = useState(() => new Date());
   const [selected, setSelected] = useState(() => new Date());
   const [newAnnouncement, setNewAnnouncement] = useState("");
   const [newEvent, setNewEvent] = useState("");
+  const [announcementNotice, setAnnouncementNotice] = useState("");
+  const [announcementSaving, setAnnouncementSaving] = useState(false);
 
   const { tasks: calendarTasks, loading: calendarLoading } = useCalendarTasks();
   const { announcements, loading: announcementsLoading } = useAnnouncements();
@@ -63,13 +67,23 @@ export default function DashboardExtras() {
 
   const selectedDayTasks = tasksByDate[selectedKey] || [];
 
-  const addAnnouncement = (event) => {
+  const addAnnouncement = async (event) => {
+    if (!canManageAnnouncements) return;
     event.preventDefault();
-    if (!newAnnouncement.trim()) return;
-    createAnnouncement({ title: newAnnouncement.trim(), createdBy: currentUser?.uid }).catch((err) =>
-      console.error("Error creating announcement:", err)
-    );
-    setNewAnnouncement("");
+    const title = newAnnouncement.trim();
+    if (!title || announcementSaving) return;
+    setAnnouncementSaving(true);
+    setAnnouncementNotice("");
+    try {
+      await createAnnouncement({ title, createdBy: currentUser?.uid, createdByName: userProfile?.name });
+      setNewAnnouncement("");
+      setAnnouncementNotice("Announcement posted.");
+    } catch (err) {
+      console.error("Error creating announcement:", err);
+      setAnnouncementNotice(err.message || "Could not post announcement.");
+    } finally {
+      setAnnouncementSaving(false);
+    }
   };
 
   const addEvent = (event) => {
@@ -133,7 +147,8 @@ export default function DashboardExtras() {
     </section>
     <section className="workspace-card announcement-workspace">
       <header><h2><Megaphone /> Announcements</h2><span>{announcements.length} update{announcements.length === 1 ? "" : "s"}</span></header>
-      <form className="announcement-add" onSubmit={addAnnouncement}><input value={newAnnouncement} onChange={(event) => setNewAnnouncement(event.target.value)} placeholder="Write an announcement" aria-label="New announcement" /><button type="submit" aria-label="Add announcement"><Plus /></button></form>
+      {isAdmin && <form className="announcement-add" onSubmit={addAnnouncement}><input value={newAnnouncement} onChange={(event) => setNewAnnouncement(event.target.value)} placeholder="Write an announcement" aria-label="New announcement" /><button type="submit" aria-label="Add announcement" disabled={announcementSaving}>{announcementSaving ? "..." : <Plus />}</button></form>}
+      {announcementNotice && <button type="button" className="announcement-widget-notice" onClick={() => setAnnouncementNotice("")}>{announcementNotice}</button>}
       <div className="workspace-announcement-list">
         {announcementsLoading && <p className="empty-widget">Loading announcements...</p>}
         {!announcementsLoading && announcements.length === 0 && <p className="empty-widget">No announcements yet.</p>}
@@ -141,12 +156,12 @@ export default function DashboardExtras() {
           <article key={item.id}>
             <i />
             <div><strong>{item.title}</strong><small>{timeAgo(item.createdAt)}</small></div>
-            <button
+            {isAdmin && <button
               onClick={() => deleteAnnouncement(item.id).catch((err) => console.error("Error deleting announcement:", err))}
               aria-label={`Delete ${item.title}`}
             >
               <Trash2 />
-            </button>
+            </button>}
           </article>
         ))}
       </div>
