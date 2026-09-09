@@ -6,7 +6,7 @@ import {
 } from "react";
 
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase/auth";
+import { auth, logoutUser } from "../firebase/auth";
 import { getUserProfile } from "../firebase/firestore";
 
 const AuthContext = createContext();
@@ -79,7 +79,7 @@ export function AuthProvider({ children }) {
   // =====================================================
 
   const isAdmin =
-    userProfile?.role === "Admin";
+    userProfile?.role === "Admin" || userProfile?.role === "EB";
 
   // =====================================================
   // CONTEXT VALUE
@@ -97,6 +97,7 @@ export function AuthProvider({ children }) {
     loading,
     profileMissing,
     profileError,
+    logout: logoutUser,
   };
 
   return (

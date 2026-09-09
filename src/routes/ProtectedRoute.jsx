@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 
 // Base guard: must be authenticated AND have a Firestore profile.
@@ -9,6 +9,7 @@ import { useAuthContext } from "../context/AuthContext";
 export default function ProtectedRoute({ children, requireAdmin = false }) {
   const { currentUser, loading, profileMissing, profileError, isAdmin } =
     useAuthContext();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -19,7 +20,13 @@ export default function ProtectedRoute({ children, requireAdmin = false }) {
   }
 
   if (!currentUser) {
-    return <Navigate to="/login" replace />;
+    const returnPath = `${location.pathname}${location.search}`;
+    return (
+      <Navigate
+        to={`/login?redirect=${encodeURIComponent(returnPath)}`}
+        replace
+      />
+    );
   }
 
   if (profileError) {

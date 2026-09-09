@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 
 import { loginUser, registerUser } from "../../firebase/auth";
 import { createUserProfile } from "../../firebase/firestore";
@@ -27,6 +27,8 @@ const withTimeout = (promise, message, timeout = 15000) =>
     );
   });
 
+const EB_AUTHORIZATION_CODE = "4567";
+
 
 export default function SignUpPage() {
   const [name, setName] = useState("");
@@ -34,6 +36,7 @@ export default function SignUpPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [subsystem, setSubsystem] = useState("");
+  const [authorizationCode, setAuthorizationCode] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -41,6 +44,8 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isExecutiveBoardSignup = searchParams.get("role") === "executive-board";
 
 
   const handleSignUp = async (e) => {
@@ -61,11 +66,15 @@ export default function SignUpPage() {
       return setError("Email is required.");
     }
 
-    if (!subsystem) {
+    if (isExecutiveBoardSignup && authorizationCode !== EB_AUTHORIZATION_CODE) {
+      return setError("Invalid EB authorization code.");
+    }
+
+    if (!isExecutiveBoardSignup && !subsystem) {
       return setError("Please select a subsystem.");
     }
 
-    if (password !== confirmPassword) {
+    if (!isExecutiveBoardSignup && password !== confirmPassword) {
       return setError("Passwords do not match.");
     }
 
@@ -117,24 +126,15 @@ export default function SignUpPage() {
       // CREATE FIRESTORE PROFILE
       // -------------------------
 
-      // IMPORTANT:
-      // Every self-service signup is ALWAYS a Member.
-      //
-      // Users cannot select Executive Board/Admin here.
-      //
-      // Executive Board access must be granted separately
-      // by an authorized administrator.
-
       await withTimeout(
         createUserProfile(
           credential.user.uid,
           {
             name: name.trim(),
             email: email.trim(),
-            subsystem: subsystem,
-
-            // DO NOT CHANGE THIS TO ADMIN.
-            role: "Member",
+            subsystem: isExecutiveBoardSignup ? "Management" : subsystem,
+            role: isExecutiveBoardSignup ? "EB" : "Member",
+            ...(isExecutiveBoardSignup ? { ebAuthorizationCode: authorizationCode } : {}),
           }
         ),
         "Your account was created, but the profile could not be saved. Check that Cloud Firestore is enabled and that the Firestore rules are published."
@@ -204,7 +204,7 @@ export default function SignUpPage() {
 
         <div className="back-nav">
           <Link
-            to="/login"
+            to={isExecutiveBoardSignup ? "/executive-board" : "/login"}
             className="back-button"
           >
             ← Back to Sign In
@@ -274,10 +274,12 @@ export default function SignUpPage() {
 
         <div className="signup-header">
 
-          <h2>Create Account</h2>
+          <h2>{isExecutiveBoardSignup ? "EB SIGN UP" : "Create Account"}</h2>
 
           <p>
-            Register new operator profile
+            {isExecutiveBoardSignup
+              ? "Register executive board profile"
+              : "Register new operator profile"}
           </p>
 
         </div>
@@ -391,71 +393,103 @@ export default function SignUpPage() {
           </div>
 
 
-          {/* SUBSYSTEM */}
+          {!isExecutiveBoardSignup && (
+            /* SUBSYSTEM */
+            <div className="form-group">
 
-          <div className="form-group">
+              <label>Subsystem</label>
 
-            <label>Subsystem</label>
+              <div className="input-wrapper">
 
-            <div className="input-wrapper">
+                <span className="input-icon">
 
-              <span className="input-icon">
-
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="3"
-                  />
-
-                  <path
-                    d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"
-                  />
-
-                </svg>
-
-              </span>
-
-
-              <select
-                value={subsystem}
-                onChange={(e) =>
-                  setSubsystem(e.target.value)
-                }
-                required
-              >
-
-                <option
-                  value=""
-                  disabled
-                >
-                  Select your subsystem
-                </option>
-
-
-                {SUBSYSTEMS.map((name) => (
-                  <option
-                    key={name}
-                    value={name}
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
                   >
-                    {name}
-                  </option>
-                ))}
 
-              </select>
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="3"
+                    />
+
+                    <path
+                      d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"
+                    />
+
+                  </svg>
+
+                </span>
+
+                <select
+                  value={subsystem}
+                  onChange={(e) =>
+                    setSubsystem(e.target.value)
+                  }
+                  required
+                >
+
+                  <option
+                    value=""
+                    disabled
+                  >
+                    Select your subsystem
+                  </option>
+
+                  {SUBSYSTEMS.map((name) => (
+                    <option
+                      key={name}
+                      value={name}
+                    >
+                      {name}
+                    </option>
+                  ))}
+
+                </select>
+
+              </div>
 
             </div>
+          )}
 
-          </div>
+          {isExecutiveBoardSignup && (
+            <div className="form-group">
 
+              <label>EB Authorization Code</label>
+
+              <div className="input-wrapper">
+
+                <span className="input-icon">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <rect x="3" y="11" width="18" height="10" rx="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                </span>
+
+                <input
+                  type="password"
+                  placeholder="Enter authorization code"
+                  value={authorizationCode}
+                  onChange={(e) => setAuthorizationCode(e.target.value)}
+                  required
+                />
+
+              </div>
+
+            </div>
+          )}
 
           {/* PASSWORD */}
 
@@ -547,6 +581,7 @@ export default function SignUpPage() {
 
           {/* CONFIRM PASSWORD */}
 
+          {!isExecutiveBoardSignup && (
           <div className="form-group">
 
             <label>Confirm Password</label>
@@ -599,6 +634,7 @@ export default function SignUpPage() {
             </div>
 
           </div>
+          )}
 
 
           {/* SUBMIT */}
@@ -611,7 +647,9 @@ export default function SignUpPage() {
 
             {loading
               ? "CREATING ACCOUNT..."
-              : "REGISTER ACCOUNT"}
+              : isExecutiveBoardSignup
+                ? "CREATE EB ACCOUNT"
+                : "REGISTER ACCOUNT"}
 
             {!loading && (
               <span className="btn-arrow">
@@ -628,7 +666,7 @@ export default function SignUpPage() {
 
           Already have an account?{" "}
 
-          <Link to="/login">
+          <Link to={isExecutiveBoardSignup ? "/login?role=executive-board" : "/login"}>
             Sign in
           </Link>
 

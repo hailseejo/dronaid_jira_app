@@ -64,6 +64,28 @@
   z-index: 10;
 }
 
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.back-button:hover,
+.back-button:focus-visible {
+  color: #00f2fe;
+  outline: none;
+}
+
 .logo-container {
   display: flex;
   flex-direction: column;
@@ -163,8 +185,23 @@
   color: #d97706;
   font-size: 12px;
   text-decoration: none;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
 }
 .forgot-link:hover { text-decoration: underline; }
+
+.reset-message {
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border: 1px solid rgba(34, 197, 94, 0.65);
+  border-radius: 8px;
+  background: rgba(34, 197, 94, 0.12);
+  color: #bbf7d0;
+  font-size: 12px;
+  text-align: center;
+}
 
 .remember-container {
   display: flex;

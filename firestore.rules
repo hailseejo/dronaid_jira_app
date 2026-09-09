@@ -14,7 +14,7 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isSignedIn() && myProfile().role == "Admin";
+      return isSignedIn() && myProfile().role in ["Admin", "EB"];
     }
 
     function mySubsystem() {
@@ -41,13 +41,25 @@ service cloud.firestore {
         resource.data.subsystem == mySubsystem()
       );
 
-      // Self-service signup: a brand-new user may create ONLY their own
-      // doc, and only as a Member with a valid subsystem. This is what
-      // stops a crafted request from self-granting Admin at signup time.
+      // Self-service signup: members need a valid subsystem. EB signup also
+      // requires the portal authorization code before creating an EB doc.
       allow create: if isSignedIn()
-        && request.auth.uid == userId
-        && request.resource.data.role == "Member"
-        && isValidSubsystem(request.resource.data.subsystem);
+        && (
+          (
+            request.resource.data.role == "Member" &&
+            isValidSubsystem(request.resource.data.subsystem) &&
+            (
+              request.auth.uid == userId ||
+              isAdmin()
+            )
+          ) ||
+          (
+            request.auth.uid == userId &&
+            request.resource.data.role == "EB" &&
+            request.resource.data.subsystem == "Management" &&
+            request.resource.data.ebAuthorizationCode == "4567"
+          )
+        );
 
       // A user may update their own doc, but never their own role or
       // subsystem (prevents Member -> Admin / Software -> MAD self-edits).

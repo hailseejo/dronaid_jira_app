@@ -1,4 +1,10 @@
 {
+  "functions": {
+    "source": "functions",
+    "predeploy": [
+      "node scripts/prepare-functions-roster.mjs"
+    ]
+  },
   "firestore": {
     "rules": "firestore.rules"
   }
