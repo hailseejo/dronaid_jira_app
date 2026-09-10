@@ -174,6 +174,7 @@
 .calendar-add,.announcement-add { display:flex; gap:7px; margin-top:12px; }
 .calendar-add span { align-self:center; color:#9b92b7; font-size:11px; white-space:nowrap; }
 .calendar-add input,.announcement-add input { min-width:0; flex:1; padding:7px 8px; color:#ece9f6; border:1px solid #48356f; border-radius:4px; background:#060a1e; font:12px "Space Grotesk"; }
+.calendar-cell .calendar-competition { color:#f2eb24; }
 .calendar-add button,.announcement-add button { display:grid; place-items:center; padding:7px 10px; color:#f2eaff; border:1px solid #9042cf; border-radius:4px; background:#6223a7; font:12px "Rajdhani"; cursor:pointer; }
 .announcement-add button { width:34px; padding:0; }
 .announcement-add svg { width:16px; }

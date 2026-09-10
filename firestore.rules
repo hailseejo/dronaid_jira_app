@@ -153,5 +153,28 @@ service cloud.firestore {
         );
       allow update: if false;
     }
+
+    match /competitions/{competitionId} {
+      allow read: if isSignedIn();
+      allow create: if isAdmin()
+        && request.resource.data.createdBy == request.auth.uid;
+      allow delete: if isAdmin();
+      allow update: if false;
+    }
+
+    match /competitionChecklistTasks/{taskId} {
+      allow read: if isSignedIn();
+      allow create: if isAdmin()
+        && request.resource.data.createdBy == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    match /calendarTasks/{taskId} {
+      allow read: if isSignedIn();
+      allow create: if isAdmin()
+        && request.resource.data.createdBy == request.auth.uid;
+      allow delete: if isAdmin();
+      allow update: if false;
+    }
   }
 }
