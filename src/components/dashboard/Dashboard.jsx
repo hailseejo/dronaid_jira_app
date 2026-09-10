@@ -179,7 +179,7 @@ export default function Dashboard() {
           <div className="member-grid">
             {people.map((person) => (
               <button type="button" className="member-card" key={person.id} onClick={() => navigate(`/member/${person.id}`)}>
-                <UserRound /><span>{person.name}</span>
+                <UserRound /><span>{person.name || person.email || "Unnamed member"}</span>
               </button>
             ))}
           </div>

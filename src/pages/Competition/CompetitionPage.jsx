@@ -41,7 +41,7 @@ function formatDate(value) {
 }
 
 export default function CompetitionPage() {
-  const { currentUser } = useAuthContext();
+  const { currentUser, isAdmin } = useAuthContext();
 
   const [competitions, setCompetitions] = useState([]);
   const [tasks, setTasks] = useState([]);
@@ -276,27 +276,29 @@ export default function CompetitionPage() {
               </div>
 
               <div className="competition-actions">
-                <button
-                  type="button"
-                  className={`add-button ${
-                    showTaskForm ? "is-active" : ""
-                  }`}
-                  onClick={() =>
-                    setShowTaskForm((open) => !open)
-                  }
-                >
-                  {showTaskForm ? (
-                    <>
-                      <X size={14} />
-                      Close
-                    </>
-                  ) : (
-                    <>
-                      <Plus size={14} />
-                      Add task
-                    </>
-                  )}
-                </button>
+                {isAdmin && (
+                  <button
+                    type="button"
+                    className={`add-button ${
+                      showTaskForm ? "is-active" : ""
+                    }`}
+                    onClick={() =>
+                      setShowTaskForm((open) => !open)
+                    }
+                  >
+                    {showTaskForm ? (
+                      <>
+                        <X size={14} />
+                        Close
+                      </>
+                    ) : (
+                      <>
+                        <Plus size={14} />
+                        Add task
+                      </>
+                    )}
+                  </button>
+                )}
 
                 <label className="competition-filter">
                   Filter
@@ -502,8 +504,9 @@ export default function CompetitionPage() {
                     type="checkbox"
                     checked={Boolean(item.complete)}
                     onChange={() =>
-                      toggleTask(item.id)
+                      isAdmin && toggleTask(item.id)
                     }
+                    disabled={!isAdmin}
                     aria-label={`Mark ${item.task} complete`}
                   />
 
@@ -523,17 +526,19 @@ export default function CompetitionPage() {
                     {item.priority || "Medium"}
                   </em>
 
-                  <button
-                    type="button"
-                    className="delete-button"
-                    onClick={() =>
-                      deleteTask(item.id)
-                    }
-                    aria-label={`Delete ${item.task}`}
-                    title="Delete task"
-                  >
-                    <Trash2 size={14} />
-                  </button>
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      className="delete-button"
+                      onClick={() =>
+                        deleteTask(item.id)
+                      }
+                      aria-label={`Delete ${item.task}`}
+                      title="Delete task"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
                 </div>
               ))}
 
@@ -561,29 +566,31 @@ export default function CompetitionPage() {
                 </p>
               </div>
 
-              <button
-                type="button"
-                className={`add-button ${
-                  showCompetitionForm ? "is-active" : ""
-                }`}
-                onClick={() =>
-                  setShowCompetitionForm(
-                    (open) => !open
-                  )
-                }
-              >
-                {showCompetitionForm ? (
-                  <>
-                    <X size={14} />
-                    Close
-                  </>
-                ) : (
-                  <>
-                    <Plus size={14} />
-                    Add
-                  </>
-                )}
-              </button>
+              {isAdmin && (
+                <button
+                  type="button"
+                  className={`add-button ${
+                    showCompetitionForm ? "is-active" : ""
+                  }`}
+                  onClick={() =>
+                    setShowCompetitionForm(
+                      (open) => !open
+                    )
+                  }
+                >
+                  {showCompetitionForm ? (
+                    <>
+                      <X size={14} />
+                      Close
+                    </>
+                  ) : (
+                    <>
+                      <Plus size={14} />
+                      Add
+                    </>
+                  )}
+                </button>
+              )}
             </header>
 
             {/* =====================================================
@@ -802,18 +809,20 @@ export default function CompetitionPage() {
                     </div>
                   </button>
 
-                  <button
-                    type="button"
-                    className="delete-button event-delete"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      deleteCompetition(item.id);
-                    }}
-                    aria-label={`Delete ${item.name}`}
-                    title={`Delete ${item.name}`}
-                  >
-                    <Trash2 size={14} />
-                  </button>
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      className="delete-button event-delete"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        deleteCompetition(item.id);
+                      }}
+                      aria-label={`Delete ${item.name}`}
+                      title={`Delete ${item.name}`}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
                 </div>
               ))}
 

@@ -3,6 +3,7 @@ import { CalendarDays, ChevronLeft, ChevronRight, Megaphone, Plus, Trash2 } from
 import { useAuthContext } from "../../context/AuthContext";
 import { useCalendarTasks, createCalendarTask, deleteCalendarTask } from "../../hooks/useCalendarTasks";
 import { useAnnouncements, createAnnouncement, deleteAnnouncement } from "../../hooks/useAnnouncements";
+import { useCompetitions } from "../../hooks/useCompetitions";
 
 function toDateKey(date) {
   const y = date.getFullYear();
@@ -55,6 +56,7 @@ export default function DashboardExtras({ activeSubsystem }) {
   const [announcementSaving, setAnnouncementSaving] = useState(false);
 
   const { tasks: calendarTasks, loading: calendarLoading } = useCalendarTasks();
+  const { competitions } = useCompetitions();
   const { announcements, loading: announcementsLoading } = useAnnouncements();
   const visibleAnnouncements = useMemo(
     () => activeSubsystem
@@ -81,6 +83,17 @@ export default function DashboardExtras({ activeSubsystem }) {
   }, [calendarTasks]);
 
   const selectedDayTasks = tasksByDate[selectedKey] || [];
+  const competitionDates = useMemo(() => {
+    const dates = {};
+    competitions.forEach((competition) => {
+      const date = competition.startDate?.toDate?.();
+      if (!date) return;
+      const key = toDateKey(date);
+      if (!dates[key]) dates[key] = [];
+      dates[key].push(competition.name);
+    });
+    return dates;
+  }, [competitions]);
 
   const addAnnouncement = async (event) => {
     if (!canManageAnnouncements) return;
@@ -107,6 +120,7 @@ export default function DashboardExtras({ activeSubsystem }) {
   };
 
   const addEvent = (event) => {
+    if (!isEb) return;
     event.preventDefault();
     if (!newEvent.trim()) return;
     createCalendarTask({ title: newEvent.trim(), date: selectedKey, createdBy: currentUser?.uid }).catch((err) =>
@@ -125,7 +139,7 @@ export default function DashboardExtras({ activeSubsystem }) {
           if (!day) return <button key={index} className="calendar-cell" disabled />;
           const dateKey = toDateKey(new Date(cursor.getFullYear(), cursor.getMonth(), day));
           const dayTasks = tasksByDate[dateKey] || [];
-          const summary = dayTasks.length
+          const summary = isEb && dayTasks.length
             ? dayTasks.length > 1
               ? `${dayTasks[0].title} +${dayTasks.length - 1}`
               : dayTasks[0].title
@@ -136,17 +150,19 @@ export default function DashboardExtras({ activeSubsystem }) {
               className={`calendar-cell ${dateKey === selectedKey ? "selected" : ""}`}
               onClick={() => setSelected(new Date(cursor.getFullYear(), cursor.getMonth(), day))}
             >
-              <b>{day}</b>{summary && <small>{summary}</small>}
+              <b>{day}</b>
+              {competitionDates[dateKey]?.map((name) => <small className="calendar-competition" key={name}>{name}</small>)}
+              {summary && <small>{summary}</small>}
             </button>
           );
         })}
       </div>
-      <form className="calendar-add" onSubmit={addEvent}>
+      {isEb && <form className="calendar-add" onSubmit={addEvent}>
         <span>Selected: {selectedLabel}</span>
         <input value={newEvent} onChange={(event) => setNewEvent(event.target.value)} placeholder="Add calendar task" aria-label="New calendar task" />
         <button type="submit">Add</button>
-      </form>
-      {selectedDayTasks.length > 0 && (
+      </form>}
+      {isEb && selectedDayTasks.length > 0 && (
         <ul className="calendar-selected-tasks">
           {selectedDayTasks.map((task) => (
             <li key={task.id}>
