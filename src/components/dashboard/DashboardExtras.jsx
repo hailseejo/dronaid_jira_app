@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
-import { CalendarDays, ChevronLeft, ChevronRight, Megaphone, Plus, Trash2 } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Megaphone, Plus, Trash2, X } from "lucide-react";
 import { useAuthContext } from "../../context/AuthContext";
 import { useCalendarTasks, createCalendarTask, deleteCalendarTask } from "../../hooks/useCalendarTasks";
+import { deleteTask } from "../../hooks/useTasks";
 import { useAnnouncements, createAnnouncement, deleteAnnouncement } from "../../hooks/useAnnouncements";
 import { useCompetitions } from "../../hooks/useCompetitions";
 
@@ -35,9 +36,9 @@ function timeAgo(createdAt) {
   return `${days}d ago`;
 }
 
-export default function DashboardExtras({ activeSubsystem }) {
+export default function DashboardExtras({ activeSubsystem, tasks = [], memberNameById = new Map() }) {
   const { currentUser, userProfile } = useAuthContext();
-  const isEb = userProfile?.role === "EB" || userProfile?.role === "Admin";
+  const isEb = userProfile?.role === "EB";
   const isMahek = userProfile?.email?.toLowerCase() === "mahekg819@gmail.com";
   const isSubsystemHead =
     userProfile?.hierarchyTier === "Subsystem Heads" &&
@@ -46,6 +47,7 @@ export default function DashboardExtras({ activeSubsystem }) {
       userProfile?.managedSubsystems?.includes(activeSubsystem) ||
       (isMahek && activeSubsystem === "Software"));
   const canManageAnnouncements = isEb || isSubsystemHead;
+  const canManageCalendar = isEb || isSubsystemHead;
   const canDeleteAnnouncement = (item) =>
     isEb || (isSubsystemHead && (!item.subsystem || item.subsystem === activeSubsystem));
   const [cursor, setCursor] = useState(() => new Date());
@@ -54,10 +56,32 @@ export default function DashboardExtras({ activeSubsystem }) {
   const [newEvent, setNewEvent] = useState("");
   const [announcementNotice, setAnnouncementNotice] = useState("");
   const [announcementSaving, setAnnouncementSaving] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   const { tasks: calendarTasks, loading: calendarLoading } = useCalendarTasks();
   const { competitions } = useCompetitions();
   const { announcements, loading: announcementsLoading } = useAnnouncements();
+  const visibleCalendarTasks = useMemo(() => {
+    const taskEvents = tasks
+      .filter((task) => task.dueDate)
+      .map((task) => ({
+        id: `task-${task.id}`,
+        taskId: task.id,
+        title: task.title,
+        date: task.dueDate?.toDate
+          ? toDateKey(task.dueDate.toDate())
+          : String(task.dueDate).slice(0, 10),
+        subsystem: task.subsystem,
+        assignedTo: task.assignedTo,
+        priority: task.priority,
+        status: task.status,
+        isTaskEvent: true,
+      }));
+    const manualEvents = calendarTasks.filter((event) =>
+      !event.taskId && (!activeSubsystem || event.subsystem === activeSubsystem)
+    );
+    return [...manualEvents, ...taskEvents];
+  }, [activeSubsystem, calendarTasks, tasks]);
   const visibleAnnouncements = useMemo(
     () => activeSubsystem
       ? announcements.filter((item) => !item.subsystem || item.subsystem === activeSubsystem)
@@ -75,12 +99,12 @@ export default function DashboardExtras({ activeSubsystem }) {
   // more than one task can exist on the same date.
   const tasksByDate = useMemo(() => {
     const map = {};
-    calendarTasks.forEach((task) => {
+    visibleCalendarTasks.forEach((task) => {
       if (!map[task.date]) map[task.date] = [];
       map[task.date].push(task);
     });
     return map;
-  }, [calendarTasks]);
+  }, [visibleCalendarTasks]);
 
   const selectedDayTasks = tasksByDate[selectedKey] || [];
   const competitionDates = useMemo(() => {
@@ -120,10 +144,15 @@ export default function DashboardExtras({ activeSubsystem }) {
   };
 
   const addEvent = (event) => {
-    if (!isEb) return;
+    if (!canManageCalendar) return;
     event.preventDefault();
     if (!newEvent.trim()) return;
-    createCalendarTask({ title: newEvent.trim(), date: selectedKey, createdBy: currentUser?.uid }).catch((err) =>
+    createCalendarTask({
+      title: newEvent.trim(),
+      date: selectedKey,
+      createdBy: currentUser?.uid,
+      subsystem: isSubsystemHead ? activeSubsystem : undefined,
+    }).catch((err) =>
       console.error("Error creating calendar task:", err)
     );
     setNewEvent("");
@@ -139,46 +168,55 @@ export default function DashboardExtras({ activeSubsystem }) {
           if (!day) return <button key={index} className="calendar-cell" disabled />;
           const dateKey = toDateKey(new Date(cursor.getFullYear(), cursor.getMonth(), day));
           const dayTasks = tasksByDate[dateKey] || [];
-          const summary = isEb && dayTasks.length
-            ? dayTasks.length > 1
-              ? `${dayTasks[0].title} +${dayTasks.length - 1}`
-              : dayTasks[0].title
-            : null;
           return (
             <button
               key={index}
               className={`calendar-cell ${dateKey === selectedKey ? "selected" : ""}`}
-              onClick={() => setSelected(new Date(cursor.getFullYear(), cursor.getMonth(), day))}
+              onClick={() => {
+                setSelected(new Date(cursor.getFullYear(), cursor.getMonth(), day));
+                setDetailsOpen(dayTasks.length > 0);
+              }}
             >
               <b>{day}</b>
               {competitionDates[dateKey]?.map((name) => <small className="calendar-competition" key={name}>{name}</small>)}
-              {summary && <small>{summary}</small>}
+              {dayTasks.length > 0 && <small className="calendar-task-count">{dayTasks.length} task{dayTasks.length === 1 ? "" : "s"}</small>}
             </button>
           );
         })}
       </div>
-      {isEb && <form className="calendar-add" onSubmit={addEvent}>
+      {canManageCalendar && <form className="calendar-add" onSubmit={addEvent}>
         <span>Selected: {selectedLabel}</span>
         <input value={newEvent} onChange={(event) => setNewEvent(event.target.value)} placeholder="Add calendar task" aria-label="New calendar task" />
         <button type="submit">Add</button>
       </form>}
-      {isEb && selectedDayTasks.length > 0 && (
-        <ul className="calendar-selected-tasks">
+      {detailsOpen && selectedDayTasks.length > 0 && (
+        <div className="calendar-task-modal-backdrop" role="presentation" onClick={() => setDetailsOpen(false)}>
+          <section className="calendar-task-modal" role="dialog" aria-modal="true" aria-labelledby="calendar-task-title" onClick={(event) => event.stopPropagation()}>
+            <header>
+              <div><h3 id="calendar-task-title">Tasks for {selectedLabel}</h3><span>{selectedDayTasks.length} scheduled</span></div>
+              <button type="button" onClick={() => setDetailsOpen(false)} aria-label="Close task details"><X /></button>
+            </header>
+            <ul className="calendar-selected-tasks">
           {selectedDayTasks.map((task) => (
             <li key={task.id}>
-              <span>{task.title}</span>
-              <button
+              <div><strong>{task.title}</strong><small>{task.assignedTo ? `Assigned to ${memberNameById.get(task.assignedTo) || "Unknown member"}` : "Unassigned"} · {task.priority || "Calendar event"} · {task.status || "Scheduled"}</small></div>
+              {canManageCalendar && <button
                 type="button"
                 className="calendar-delete"
-                onClick={() => deleteCalendarTask(task.id).catch((err) => console.error("Error deleting calendar task:", err))}
+                onClick={() => (task.isTaskEvent
+                  ? deleteTask(task.taskId)
+                  : deleteCalendarTask(task.id)
+                ).catch((err) => console.error("Error deleting calendar task:", err))}
                 aria-label={`Delete ${task.title} on ${selectedLabel}`}
                 title="Delete this task"
               >
                 <Trash2 />
-              </button>
+              </button>}
             </li>
           ))}
-        </ul>
+            </ul>
+          </section>
+        </div>
       )}
     </section>
     <section className="workspace-card announcement-workspace">

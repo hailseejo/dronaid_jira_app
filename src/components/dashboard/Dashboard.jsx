@@ -235,7 +235,7 @@ export default function Dashboard() {
           ))}
         </div>
       </section>
-      <DashboardExtras activeSubsystem={activeSubsystem} />
+      <DashboardExtras activeSubsystem={activeSubsystem} tasks={tasks} memberNameById={memberNameById} />
     </main>
     {notice && <button className="dashboard-toast" onClick={() => setNotice("")}>{notice}<span>x</span></button>}
   </div>;
