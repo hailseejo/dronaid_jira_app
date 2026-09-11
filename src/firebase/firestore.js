@@ -159,7 +159,8 @@ export const createTask = ({
   dueDate,
   createdBy,
 }) => {
-  return addDoc(collection(db, "tasks"), {
+  const taskRef = doc(collection(db, "tasks"));
+  return setDoc(taskRef, {
     title,
     description: description || "",
     assignedTo: assignedTo || null,
@@ -169,7 +170,7 @@ export const createTask = ({
     dueDate: dueDate ? new Date(dueDate) : null,
     createdBy,
     createdAt: serverTimestamp(),
-  });
+  }).then(() => taskRef);
 };
 
 
@@ -297,10 +298,11 @@ export const subscribeToMemberTasks = (
 // signed-in user sees the same calendar, matching the previous local
 // state's behaviour of one shared calendar for everyone.
 
-export const createCalendarTask = ({ title, date, createdBy }) =>
+export const createCalendarTask = ({ title, date, createdBy, subsystem }) =>
   addDoc(collection(db, "calendarTasks"), {
     title,
     date, // "YYYY-MM-DD" string
+    ...(subsystem ? { subsystem } : {}),
     createdBy,
     createdAt: serverTimestamp(),
   });
