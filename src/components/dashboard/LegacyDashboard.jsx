@@ -171,57 +171,15 @@ function formatDueDate(value) {
   return `Due: ${date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}`;
 }
 
-// =====================================================
-// TODO ITEM
-// =====================================================
-
-function TodoItem({ task, onDelete }) {
+function TodoItem({ task, canDelete, onDelete }) {
   return (
     <div className="todo-item">
-      <div className="todo-name">
-        {task.title}
-      </div>
-
+      <div className="todo-name">{task.title}</div>
       <div className="todo-date">
         <span className={`priority-dot ${task.priority}`}></span>
-
         {task.date}
-
-        <button
-          type="button"
-          className="team-delete"
-          onClick={() => onDelete(task.id)}
-          aria-label={`Delete ${task.title}`}
-        >
-          ×
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// Same visual shape as TodoItem, but for a Firestore task (real
-// priority/dueDate fields, and a delete button that's hidden entirely
-// when the viewer isn't allowed to delete it rather than a no-op click).
-function FirebaseTodoItem({ task, canDelete, onDelete }) {
-  return (
-    <div className="todo-item">
-      <div className="todo-name">
-        {task.title}
-      </div>
-
-      <div className="todo-date">
-        <span className={`priority-dot ${(task.priority || "medium").toLowerCase()}`}></span>
-
-        {formatDueDate(task.dueDate)}
-
         {canDelete && (
-          <button
-            type="button"
-            className="team-delete"
-            onClick={() => onDelete(task)}
-            aria-label={`Delete ${task.title}`}
-          >
+          <button type="button" className="team-delete" onClick={() => onDelete(task.id)} aria-label={`Delete ${task.title}`}>
             ×
           </button>
         )}
@@ -230,80 +188,51 @@ function FirebaseTodoItem({ task, canDelete, onDelete }) {
   );
 }
 
-// =====================================================
-// MAIN DASHBOARD
-// =====================================================
+function FirebaseTodoItem({ task, canDelete, onDelete }) {
+  return (
+    <div className="todo-item">
+      <div className="todo-name">{task.title}</div>
+      <div className="todo-date">
+        <span className={`priority-dot ${(task.priority || "medium").toLowerCase()}`}></span>
+        {formatDueDate(task.dueDate)}
+        {canDelete && (
+          <button type="button" className="team-delete" onClick={() => onDelete(task)} aria-label={`Delete ${task.title}`}>
+            ×
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
 
-// When rendered from a specific member's page (via MemberPage.jsx),
-// memberId + memberProfile are provided and the greeting, profile card,
-// To do / In Progress cards, and Upcoming Deadlines become Firebase-backed
-// and scoped to that one member. When rendered with no props (the /team
-// and /workspace-dashboard routes), every one of those sections falls back
-// to the original, unchanged local-storage-backed team-wide behaviour.
 export default function LegacyDashboard({ memberId, memberProfile }) {
   const isMemberMode = Boolean(memberId);
-
-  // ---- VIEWER (the logged-in person looking at this page) ----
   const { currentUser, userProfile, isAdmin } = useAuthContext();
   const createFirebaseTask = useCreateTask({ userProfile, currentUser });
-
   const isOwnPage = isMemberMode && currentUser?.uid === memberId;
-
-  // A regular member viewing a TEAMMATE's page can't use the same query an
-  // Admin or the member themself can (see subscribeToSubsystemMemberTasks
-  // in firestore.js for why) — pick whichever query shape is actually
-  // authorized for this viewer/target combination. Both hooks are always
-  // called (React hooks rules); whichever one isn't relevant for this
-  // viewer is passed a null argument and returns an empty, inert result.
   const canManageMemberTasks = canManageSubsystemTasks(userProfile, memberProfile?.subsystem);
   const ownOrAdminTasks = useMemberTasks(isMemberMode && (isOwnPage || isAdmin) ? memberId : null);
   const teammateTasks = useSubsystemMemberTasks(
     isMemberMode && !isOwnPage && !isAdmin && canManageMemberTasks ? memberProfile?.subsystem : null,
     isMemberMode && !isOwnPage && !isAdmin && canManageMemberTasks ? memberId : null
   );
-
   const memberTasks = isOwnPage || isAdmin ? ownOrAdminTasks.tasks : teammateTasks.tasks;
   const memberTasksLoading = isOwnPage || isAdmin ? ownOrAdminTasks.loading : teammateTasks.loading;
   const memberTasksError = isOwnPage || isAdmin ? ownOrAdminTasks.error : teammateTasks.error;
-
-  // Task creation/update logic already used elsewhere in this project only
-  // recognises these exact status strings: a newly-created task always
-  // starts as "Ongoing", and cycling moves it through "In Progress" and
-  // "Done". "Ongoing" is this project's "not started yet" bucket, so it's
-  // what the "To do" card maps to — no new status value is introduced.
-  const firebaseTodoTasks = useMemo(
-    () => memberTasks.filter((task) => task.status === "Ongoing"),
-    [memberTasks]
-  );
-  const firebaseProgressTasks = useMemo(
-    () => memberTasks.filter((task) => task.status === "In Progress"),
-    [memberTasks]
-  );
-
-  // Derived directly from the same task data — never a separate collection.
-  // Only tasks that are still open (Ongoing or In Progress) and have a due
-  // date are shown, nearest date first.
-  const firebaseDeadlines = useMemo(() => {
-    return memberTasks
-      .filter((task) => (task.status === "Ongoing" || task.status === "In Progress") && task.dueDate)
-      .slice()
-      .sort((a, b) => (a.dueDate?.toMillis?.() || 0) - (b.dueDate?.toMillis?.() || 0));
-  }, [memberTasks]);
-
-  const canManageFirebaseTask = (task) =>
-    canManageSubsystemTasks(userProfile, task.subsystem || memberProfile?.subsystem);
+  const firebaseTodoTasks = useMemo(() => memberTasks.filter((task) => task.status === "Ongoing"), [memberTasks]);
+  const firebaseProgressTasks = useMemo(() => memberTasks.filter((task) => task.status === "In Progress" || task.status === "Ongoing"), [memberTasks]);
+  const firebaseCompletedTasks = useMemo(() => memberTasks.filter((task) => task.status === "Done"), [memberTasks]);
+  const firebaseDeadlines = useMemo(() => memberTasks
+    .filter((task) => (task.status === "Ongoing" || task.status === "In Progress") && task.dueDate)
+    .slice()
+    .sort((a, b) => (a.dueDate?.toMillis?.() || 0) - (b.dueDate?.toMillis?.() || 0)), [memberTasks]);
+  const canManageFirebaseTask = (task) => canManageSubsystemTasks(userProfile, task.subsystem || memberProfile?.subsystem);
   const canCreateMemberTask = canManageSubsystemTasks(userProfile, memberProfile?.subsystem);
-
-  // ---- LOCAL, team-wide state (unchanged) — used when NOT viewing a
-  // specific member's page ----
-  const [todoTasks, setTodoTasks] = useState(() =>
-    readStoredList("dronaid-team-todos")
-  );
-
-  const [progressTasks, setProgressTasks] = useState(() =>
-    readStoredList("dronaid-team-progress")
-  );
-
+  const canManageTeamTasks = userProfile?.role === "EB" || userProfile?.hierarchyTier === "Subsystem Heads";
+  const canManageTeamTask = (task) => userProfile?.role === "EB" || (userProfile?.hierarchyTier === "Subsystem Heads" && (!task.subsystem || task.subsystem === userProfile.subsystem));
+  const [todoTasks, setTodoTasks] = useState(() => readStoredList("dronaid-team-todos"));
+  const [progressTasks, setProgressTasks] = useState(() => readStoredList("dronaid-team-progress"));
+  const [completedTasks, setCompletedTasks] = useState(() => readStoredList("dronaid-team-completed"));
   const [teamDeadlines, setTeamDeadlines] = useState(() =>
     readStoredList("dronaid-team-deadlines")
   );
@@ -369,18 +298,24 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
         priority: todoForm.priority.charAt(0).toUpperCase() + todoForm.priority.slice(1),
         dueDate: todoForm.date,
       }).catch((err) => console.error("Error creating task:", err));
-    } else {
+    } else if (canManageTeamTasks) {
       const newTask = {
         ...todoForm,
         id: crypto.randomUUID(),
         title: todoForm.title.trim(),
         date: `Due: ${todoForm.date}`,
+        subsystem: userProfile?.subsystem,
       };
 
       updateList(
         "dronaid-team-todos",
         setTodoTasks,
         [newTask, ...todoTasks]
+      );
+      updateList(
+        "dronaid-team-progress",
+        setProgressTasks,
+        [newTask, ...progressTasks]
       );
     }
 
@@ -416,10 +351,11 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
       })
         .then((docRef) => updateTaskStatus(docRef.id, "In Progress"))
         .catch((err) => console.error("Error creating task:", err));
-    } else {
+    } else if (canManageTeamTasks) {
       const newTask = {
         id: crypto.randomUUID(),
         title: progressTitle.trim(),
+        subsystem: userProfile?.subsystem,
       };
 
       updateList(
@@ -525,6 +461,32 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
     deleteTask(task.id).catch((err) => console.error("Error deleting task:", err));
   };
 
+  const completeFirebaseTask = (task) => {
+    if (!canManageFirebaseTask(task)) return;
+    updateTaskStatus(task.id, "Done").catch((err) => console.error("Error completing task:", err));
+  };
+
+  const completeTeamTask = (task) => {
+    if (!canManageTeamTask(task)) return;
+
+    const taskId = task.id;
+    updateList(
+      "dronaid-team-todos",
+      setTodoTasks,
+      todoTasks.filter((item) => item.id !== taskId)
+    );
+    updateList(
+      "dronaid-team-progress",
+      setProgressTasks,
+      progressTasks.filter((item) => item.id !== taskId)
+    );
+    updateList(
+      "dronaid-team-completed",
+      setCompletedTasks,
+      [task, ...completedTasks]
+    );
+  };
+
   // =====================================================
   // DISPLAY VALUES
   // =====================================================
@@ -535,6 +497,7 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
 
   const todoCount = isMemberMode ? firebaseTodoTasks.length : todoTasks.length;
   const progressCount = isMemberMode ? firebaseProgressTasks.length : progressTasks.length;
+  const completedCount = isMemberMode ? firebaseCompletedTasks.length : completedTasks.length;
 
   // =====================================================
   // RENDER
@@ -638,7 +601,7 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
                   To do ({todoCount})
                 </span>
 
-                {(!isMemberMode || canCreateMemberTask) && <button
+                {(isMemberMode ? canCreateMemberTask : canManageTeamTasks) && <button
                   type="button"
                   className="team-add"
                   onClick={() =>
@@ -745,6 +708,7 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
                     <TodoItem
                       key={task.id || index}
                       task={task}
+                      canDelete={canManageTeamTask(task)}
                       onDelete={(id) =>
                         deleteItem(
                           "dronaid-team-todos",
@@ -792,7 +756,7 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
                   In Progress ({progressCount})
                 </span>
 
-                {(!isMemberMode || canCreateMemberTask) && <button
+                {(isMemberMode ? canCreateMemberTask : canManageTeamTasks) && <button
                   type="button"
                   className="team-add"
                   onClick={() =>
@@ -842,6 +806,16 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
                   ) : firebaseProgressTasks.length ? (
                     firebaseProgressTasks.map((task) => (
                       <div className="progress-item" key={task.id}>
+                        {canManageFirebaseTask(task) && (
+                          <input
+                            type="checkbox"
+                            className="task-checkbox"
+                            checked={false}
+                            onChange={() => completeFirebaseTask(task)}
+                            aria-label={`Complete ${task.title}`}
+                          />
+                        )}
+
                         {task.title}
 
                         {canManageFirebaseTask(task) && (
@@ -868,25 +842,37 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
                       key={task.id || index}
                     >
 
+                      {canManageTeamTasks && (
+                        <input
+                          type="checkbox"
+                          className="task-checkbox"
+                          checked={false}
+                          onChange={() => completeTeamTask(task)}
+                          aria-label={`Complete ${task.title || task}`}
+                        />
+                      )}
+
                       {task.title || task}
 
-                      <button
-                        type="button"
-                        className="team-delete"
-                        onClick={() =>
-                          deleteItem(
-                            "dronaid-team-progress",
-                            setProgressTasks,
-                            progressTasks,
-                            task.id
-                          )
-                        }
-                        aria-label={`Delete ${
-                          task.title || task
-                        }`}
-                      >
-                        ×
-                      </button>
+                      {canManageTeamTask(task) && (
+                        <button
+                          type="button"
+                          className="team-delete"
+                          onClick={() =>
+                            deleteItem(
+                              "dronaid-team-progress",
+                              setProgressTasks,
+                              progressTasks,
+                              task.id
+                            )
+                          }
+                          aria-label={`Delete ${
+                            task.title || task
+                          }`}
+                        >
+                          ×
+                        </button>
+                      )}
 
                     </div>
                   ))
@@ -1060,6 +1046,53 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
 
             </div>
 
+            <div className="card completed-card">
+              <div className="card-heading">
+                <span className="card-icon"><TaskIcon /></span>
+                <span>completed tasks ({completedCount})</span>
+              </div>
+              <div className="completed-list">
+                {(isMemberMode ? firebaseCompletedTasks : completedTasks).length ?
+                  (isMemberMode ? firebaseCompletedTasks : completedTasks).map((task, index) => (
+                    <div className="completed-item" key={task.id || index}>
+                      <span className="completed-check">✓</span>
+                      <span>{task.title || task}</span>
+                    </div>
+                  )) : <p className="team-empty">No completed tasks yet.</p>}
+              </div>
+            </div>
+
+            <div className="side-card deadlines deadlines-row">
+              <div className="deadline-heading">
+                <h2>Upcoming Deadlines</h2>
+                {!isMemberMode && (
+                  <button type="button" className="team-add" onClick={() => setOpenForm(openForm === "deadline" ? "" : "deadline")}>
+                    + Add
+                  </button>
+                )}
+              </div>
+              {!isMemberMode && openForm === "deadline" && (
+                <form className="team-form" onSubmit={addTeamDeadline}>
+                  <input placeholder="Deadline name" value={teamDeadlineForm.title} onChange={(event) => setTeamDeadlineForm({ ...teamDeadlineForm, title: event.target.value })} required />
+                  <input type="date" aria-label="Deadline date" value={teamDeadlineForm.date} onChange={(event) => setTeamDeadlineForm({ ...teamDeadlineForm, date: event.target.value })} required />
+                  <button type="submit">Save</button>
+                </form>
+              )}
+              <div className="deadline-list">
+                {isMemberMode ? (
+                  memberTasksLoading ? <p className="team-empty">Loading deadlines...</p> : memberTasksError ? <p className="team-empty">Unable to load deadlines right now.</p> : firebaseDeadlines.length ? firebaseDeadlines.map((task) => (
+                    <div className="deadline" key={task.id}><div>• &nbsp; {task.title}</div><span>{formatDueDate(task.dueDate)}</span></div>
+                  )) : <p className="team-empty">No upcoming deadlines.</p>
+                ) : teamDeadlines.length ? teamDeadlines.map((deadline, index) => (
+                  <div className="deadline" key={deadline.id || index}>
+                    <div>• &nbsp; {deadline.title}</div><span>{deadline.date}</span>
+                    <button type="button" className="team-delete" onClick={() => deleteItem("dronaid-team-deadlines", setTeamDeadlines, teamDeadlines, deadline.id)} aria-label={`Delete ${deadline.title}`}>×</button>
+                  </div>
+                )) : <p className="team-empty">No upcoming deadlines.</p>}
+              </div>
+              <button type="button" className="view-all"><span>View All</span><ArrowIcon /></button>
+            </div>
+
           </div>
 
         </section>
@@ -1130,157 +1163,6 @@ export default function LegacyDashboard({ memberId, memberProfile }) {
               </div>
 
             </div>
-
-          </div>
-
-          {/* DEADLINES */}
-
-          <div className="side-card deadlines">
-
-            <div className="deadline-heading">
-
-              <h2>
-                Upcoming Deadlines
-              </h2>
-
-              {/* Firebase mode derives deadlines automatically from To do
-                  / In Progress tasks, so there is nothing to manually add
-                  there — the +Add form only applies to team/local mode. */}
-              {!isMemberMode && (
-                <button
-                  type="button"
-                  className="team-add"
-                  onClick={() =>
-                    setOpenForm(
-                      openForm === "deadline"
-                        ? ""
-                        : "deadline"
-                    )
-                  }
-                >
-                  + Add
-                </button>
-              )}
-
-            </div>
-
-            {!isMemberMode && openForm === "deadline" && (
-              <form
-                className="team-form"
-                onSubmit={addTeamDeadline}
-              >
-
-                <input
-                  placeholder="Deadline name"
-                  value={teamDeadlineForm.title}
-                  onChange={(event) =>
-                    setTeamDeadlineForm({
-                      ...teamDeadlineForm,
-                      title: event.target.value,
-                    })
-                  }
-                  required
-                />
-
-                <input
-                  type="date"
-                  aria-label="Deadline date"
-                  value={teamDeadlineForm.date}
-                  onChange={(event) =>
-                    setTeamDeadlineForm({
-                      ...teamDeadlineForm,
-                      date: event.target.value,
-                    })
-                  }
-                  required
-                />
-
-                <button type="submit">
-                  Save
-                </button>
-
-              </form>
-            )}
-
-            <div className="deadline-list">
-
-              {isMemberMode ? (
-                memberTasksLoading ? (
-                  <p className="team-empty">Loading deadlines...</p>
-                ) : memberTasksError ? (
-                  <p className="team-empty">Unable to load deadlines right now.</p>
-                ) : firebaseDeadlines.length ? (
-                  firebaseDeadlines.map((task) => (
-                    <div className="deadline" key={task.id}>
-                      <div>
-                        • &nbsp; {task.title}
-                      </div>
-
-                      <span>
-                        {formatDueDate(task.dueDate)}
-                      </span>
-                    </div>
-                  ))
-                ) : (
-                  <p className="team-empty">
-                    No upcoming deadlines.
-                  </p>
-                )
-              ) : teamDeadlines.length ? (
-                teamDeadlines.map(
-                  (deadline, index) => (
-                    <div
-                      className="deadline"
-                      key={
-                        deadline.id || index
-                      }
-                    >
-
-                      <div>
-                        • &nbsp; {deadline.title}
-                      </div>
-
-                      <span>
-                        {deadline.date}
-                      </span>
-
-                      <button
-                        type="button"
-                        className="team-delete"
-                        onClick={() =>
-                          deleteItem(
-                            "dronaid-team-deadlines",
-                            setTeamDeadlines,
-                            teamDeadlines,
-                            deadline.id
-                          )
-                        }
-                        aria-label={`Delete ${deadline.title}`}
-                      >
-                        ×
-                      </button>
-
-                    </div>
-                  )
-                )
-              ) : (
-                <p className="team-empty">
-                  No upcoming deadlines.
-                </p>
-              )}
-
-            </div>
-
-            <button
-              type="button"
-              className="view-all"
-            >
-              <span>
-                View All
-              </span>
-
-              <ArrowIcon />
-            </button>
 
           </div>
 
