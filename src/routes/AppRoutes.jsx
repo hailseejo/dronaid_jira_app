@@ -44,7 +44,7 @@ export default function AppRoutes() {
         <Route
           path="/executive-board/members"
           element={
-            <ProtectedRoute requireAdmin>
+            <ProtectedRoute requireEb>
               <ExecutiveBoardMembersPage />
             </ProtectedRoute>
           }
@@ -53,7 +53,7 @@ export default function AppRoutes() {
         <Route
           path="/executive-board/members/create"
           element={
-            <ProtectedRoute requireAdmin>
+            <ProtectedRoute requireEb>
               <ExecutiveBoardMemberSignupPage />
             </ProtectedRoute>
           }

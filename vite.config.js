@@ -5,7 +5,39 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
 const parseRoster = (content) => {
-  const rows = content.split(/\r\n|\n|\r/).map((line) => line.split(','));
+  const rows = [];
+  let row = [];
+  let value = '';
+  let quoted = false;
+
+  for (let index = 0; index < content.length; index += 1) {
+    const character = content[index];
+    const nextCharacter = content[index + 1];
+
+    if (character === '"' && quoted && nextCharacter === '"') {
+      value += '"';
+      index += 1;
+    } else if (character === '"') {
+      quoted = !quoted;
+    } else if (character === ',' && !quoted) {
+      row.push(value.trim());
+      value = '';
+    } else if ((character === '\n' || character === '\r') && !quoted) {
+      if (character === '\r' && nextCharacter === '\n') index += 1;
+      row.push(value.trim());
+      if (row.some(Boolean)) rows.push(row);
+      row = [];
+      value = '';
+    } else {
+      value += character;
+    }
+  }
+
+  if (value || row.length) {
+    row.push(value.trim());
+    if (row.some(Boolean)) rows.push(row);
+  }
+
   const headerIndex = rows.findIndex((row) =>
     row.includes('Full Name') && row.includes('Email Address')
   );
@@ -38,7 +70,18 @@ const privateRosterPlugin = () => ({
   configureServer(server) {
     server.middlewares.use('/api/member-roster', (_request, response) => {
       try {
-        const csvPath = path.resolve(process.cwd(), 'private-data/members.csv');
+        const rosterCandidates = [
+          path.resolve(import.meta.dirname, 'private-data/members.csv'),
+          path.resolve(import.meta.dirname, 'public/members.csv'),
+          path.resolve(import.meta.dirname, 'members.csv'),
+        ];
+        const csvPath = rosterCandidates.find((candidate) => fs.existsSync(candidate));
+        if (!csvPath) {
+          response.statusCode = 404;
+          response.setHeader('Content-Type', 'application/json');
+          response.end(JSON.stringify({ error: 'members.csv was not found. Add it to private-data, public, or the project root.' }));
+          return;
+        }
         const members = parseRoster(fs.readFileSync(csvPath, 'utf8'));
         response.setHeader('Content-Type', 'application/json');
         response.end(JSON.stringify({ members }));

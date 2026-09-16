@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { getMemberRoster } from "../../firebase/memberManagement";
+import { getMemberRoster, loadGoogleRoster, saveUploadedRoster } from "../../firebase/memberManagement";
 import "./ExecutiveBoardMembersPage.css";
 
 export default function ExecutiveBoardMembersPage() {
@@ -10,6 +10,7 @@ export default function ExecutiveBoardMembersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
 
   const loadMembers = async () => {
@@ -51,6 +52,42 @@ export default function ExecutiveBoardMembersPage() {
     navigate(`/executive-board/members/create?email=${encodeURIComponent(member.email)}`);
   };
 
+  const handleMemberKeyDown = (event, member) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleMemberClick(member);
+    }
+  };
+
+  const handleRosterUpload = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    setUploading(true);
+    setError("");
+    try {
+      setMembers(await saveUploadedRoster(file));
+      setNotice(`${file.name} uploaded. Member details are now extracted from the CSV.`);
+    } catch (uploadError) {
+      setError(uploadError.message || "Unable to read this CSV file.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const refreshGoogleRoster = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      setMembers(await loadGoogleRoster());
+      setNotice("Google Sheet roster loaded. Member details were extracted successfully.");
+    } catch (loadError) {
+      setError(loadError.message || "Unable to load the Google Sheet roster.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="eb-members-page">
       <div className="bg-grid" />
@@ -67,6 +104,13 @@ export default function ExecutiveBoardMembersPage() {
           <p className="eb-members-eyebrow">OFFICIAL ROSTER / FIREBASE STATUS</p>
           <h1 id="eb-members-title">SIGN UP MEMBERS</h1>
           <p>Select an unregistered member to create their account.</p>
+          <label className="eb-members-upload">
+            <input type="file" accept=".csv,text/csv" onChange={handleRosterUpload} disabled={uploading} />
+            {uploading ? "READING CSV..." : "UPLOAD MEMBER CSV"}
+          </label>
+          <button type="button" className="eb-members-refresh" onClick={refreshGoogleRoster} disabled={loading}>
+            {loading ? "LOADING..." : "SYNC GOOGLE SHEET"}
+          </button>
         </header>
 
         <label className="eb-members-search">
@@ -115,15 +159,22 @@ export default function ExecutiveBoardMembersPage() {
                     key={member.email}
                     className={member.registered ? "is-registered" : "is-unregistered"}
                     onClick={() => handleMemberClick(member)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") handleMemberClick(member);
-                    }}
+                    onKeyDown={(event) => handleMemberKeyDown(event, member)}
                     tabIndex={0}
                   >
                     <td>
-                      <span className={`member-status ${member.registered ? "registered" : "unregistered"}`}>
-                        {member.registered ? "✓" : "✗"}
-                      </span>
+                      <button
+                        type="button"
+                        className={`member-status ${member.registered ? "registered" : "unregistered"}`}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleMemberClick(member);
+                        }}
+                        aria-label={member.registered ? `${member.fullName} is already registered` : `Select ${member.fullName}`}
+                        title={member.registered ? "Already registered" : "Select member"}
+                      >
+                        {member.registered ? "✓" : "✓"}
+                      </button>
                     </td>
                     <td>
                       <strong>{member.fullName}</strong>
