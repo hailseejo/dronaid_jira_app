@@ -6,8 +6,8 @@ import { useAuthContext } from "../context/AuthContext";
 // (the previous version duplicated onAuthStateChanged here).
 //
 // Pass requireAdmin to also gate on role === "Admin".
-export default function ProtectedRoute({ children, requireAdmin = false }) {
-  const { currentUser, loading, profileMissing, profileError, isAdmin } =
+export default function ProtectedRoute({ children, requireAdmin = false, requireEb = false }) {
+  const { currentUser, userProfile, loading, profileMissing, profileError, isAdmin } =
     useAuthContext();
   const location = useLocation();
 
@@ -46,6 +46,10 @@ export default function ProtectedRoute({ children, requireAdmin = false }) {
         </span>
       </div>
     );
+  }
+
+  if (requireEb && userProfile?.role !== "EB") {
+    return <Navigate to="/access-denied" replace />;
   }
 
   if (requireAdmin && !isAdmin) {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 
-import { loginUser, registerUser } from "../../firebase/auth";
+import { registerUser } from "../../firebase/auth";
 import { createUserProfile } from "../../firebase/firestore";
 
 import { SUBSYSTEMS } from "../../constants/subsystems";
@@ -94,32 +94,13 @@ export default function SignUpPage() {
       // CREATE FIREBASE AUTH USER
       // -------------------------
 
-      try {
-        credential = await withTimeout(
-          registerUser(
-            email.trim(),
-            password
-          ),
-          "Account creation timed out. Check your internet connection and try again."
-        );
-
-      } catch (authError) {
-
-        // If the email already exists,
-        // try logging into the existing account.
-        if (authError.code !== "auth/email-already-in-use") {
-          throw authError;
-        }
-
-
-        credential = await withTimeout(
-          loginUser(
-            email.trim(),
-            password
-          ),
-          "Unable to verify the existing account. Check your email, password, and internet connection."
-        );
-      }
+      credential = await withTimeout(
+        registerUser(
+          email.trim(),
+          password
+        ),
+        "Account creation timed out. Check your internet connection and try again."
+      );
 
 
       // -------------------------
@@ -154,7 +135,14 @@ export default function SignUpPage() {
         err
       );
 
+      const messages = {
+        "auth/email-already-in-use": "An account already exists for this email. Sign in instead.",
+        "auth/invalid-email": "Please enter a valid email address.",
+        "auth/weak-password": "Password must be at least 6 characters.",
+        "auth/network-request-failed": "Unable to reach Firebase. Check your internet connection and try again.",
+      };
       setError(
+        messages[err.code] ||
         err.message ||
         "Unable to create your account. Please try again."
       );

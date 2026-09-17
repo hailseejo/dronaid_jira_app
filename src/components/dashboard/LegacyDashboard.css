@@ -586,6 +586,51 @@ body {
   font-size: 11px;
 }
 
+.task-checkbox {
+  width: 14px;
+  height: 14px;
+  margin: 0 9px 0 0;
+  flex-shrink: 0;
+  accent-color: #b449c9;
+  cursor: pointer;
+}
+
+.completed-card {
+  grid-column: 1 / -1;
+  min-height: 190px;
+}
+
+.deadlines-row {
+  grid-column: 1 / -1;
+  min-height: 170px;
+}
+
+.completed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.completed-item {
+  min-height: 38px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(67, 77, 108, 0.35);
+  border-radius: 5px;
+  background: rgba(4, 10, 24, 0.65);
+  color: #aaa6b0;
+  font-size: 11px;
+  text-decoration: line-through;
+}
+
+.completed-check {
+  color: #c960dc;
+  font-size: 15px;
+  text-decoration: none;
+}
+
 
 /* =====================================================
    PRIORITY DOT
@@ -1142,8 +1187,16 @@ body {
 }
 
 .legacy-main .card {
-  min-height: 540px;
+  min-height: 260px;
   padding: 23px 20px;
+}
+
+.legacy-main .completed-card {
+  min-height: 140px;
+}
+
+.legacy-main .deadlines-row {
+  min-height: 150px;
 }
 
 .legacy-main .card-heading {

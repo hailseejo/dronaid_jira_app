@@ -11,9 +11,11 @@ node_modules
 dist
 dist-ssr
 *.local
-private-data/
+private-data/*
 functions/private-data/
 functions/node_modules/
+!private-data/
+!private-data/members.csv.example
 
 # Editor directories and files
 .vscode/*

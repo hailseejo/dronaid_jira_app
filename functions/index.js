@@ -92,7 +92,7 @@ const requireAdmin = async (request) => {
   }
 
   const profile = await db.collection("users").doc(request.auth.uid).get();
-  if (!profile.exists || !["Admin", "EB"].includes(profile.data().role)) {
+  if (!profile.exists || profile.data().role !== "EB") {
     throw new HttpsError("permission-denied", "Executive Board access is required.");
   }
 };
