@@ -1,0 +1,174 @@
+.executive-board-page {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background-color: #05040a;
+  color: #ffffff;
+}
+
+.executive-board-page .bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+.executive-board-page .glow-left,
+.executive-board-page .glow-right {
+  position: absolute;
+  width: 450px;
+  height: 450px;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.executive-board-page .glow-left {
+  top: 15%;
+  left: 8%;
+  background: #6366f1;
+}
+
+.executive-board-page .glow-right {
+  right: 8%;
+  bottom: 15%;
+  background: #a855f7;
+}
+
+.executive-board-page .hud-overlay {
+  position: absolute;
+  z-index: 1;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+  color: #6b7280;
+  letter-spacing: 1px;
+  line-height: 1.8;
+  pointer-events: none;
+}
+
+.executive-board-page .hud-left {
+  top: 180px;
+  left: 40px;
+}
+
+.executive-board-page .hud-right {
+  top: 180px;
+  right: 40px;
+  text-align: right;
+}
+
+.executive-board-page .hud-label {
+  color: #4b5563;
+}
+
+.executive-board-panel {
+  width: 100%;
+  max-width: 460px;
+  padding: 40px 32px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  background: rgba(13, 12, 22, 0.88);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+  text-align: center;
+}
+
+.executive-board-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.executive-board-brand {
+  margin-top: 4px;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 3px;
+}
+
+.executive-board-brand span {
+  color: #00f2fe;
+}
+
+.executive-board-heading {
+  margin-bottom: 24px;
+}
+
+.executive-board-heading p {
+  margin-bottom: 10px;
+  color: #00f2fe;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+
+.executive-board-heading h1 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.executive-board-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.executive-board-actions a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 74px;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(18, 16, 31, 0.8);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.executive-board-actions a:hover,
+.executive-board-actions a:focus-visible {
+  border-color: #00f2fe;
+  background: rgba(0, 242, 254, 0.08);
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.executive-board-actions a:first-child {
+  border-color: rgba(99, 102, 241, 0.65);
+  background: linear-gradient(90deg, rgba(79, 70, 229, 0.32), rgba(124, 58, 237, 0.22));
+}
+
+.executive-board-actions a span {
+  color: #00f2fe;
+  font-size: 21px;
+}
+
+@media (max-width: 600px) {
+  .executive-board-panel {
+    width: calc(100% - 32px);
+    padding: 32px 24px;
+  }
+
+  .executive-board-page .hud-overlay {
+    display: none;
+  }
+}

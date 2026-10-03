@@ -1,0 +1,369 @@
+/* =====================================================
+   MEMBER PROFILE MODAL / POPUP
+   ===================================================== */
+
+.profile-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(2, 4, 14, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: profileFadeIn 0.2s ease-out;
+}
+
+@keyframes profileFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.profile-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background: linear-gradient(135deg, rgba(14, 16, 42, 0.97), rgba(5, 7, 20, 0.98));
+  border: 1px solid #7340aa;
+  border-radius: 16px;
+  box-shadow:
+    inset 0 0 35px rgba(91, 30, 156, 0.15),
+    0 20px 60px rgba(0, 0, 0, 0.85),
+    0 0 30px rgba(123, 60, 255, 0.22);
+  padding: 24px;
+  color: #e8e6ff;
+  font-family: Rajdhani, "Space Grotesk", sans-serif;
+  animation: profilePopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+@keyframes profilePopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Corner cyber accent lines */
+.profile-modal-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #9b4ac8, #00f2fe, #9b4ac8, transparent);
+}
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
+.profile-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(115, 64, 170, 0.3);
+}
+
+.profile-modal-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #34d399;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulseGreen 1.8s infinite;
+}
+
+@keyframes pulseGreen {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.85);
+  }
+}
+
+.profile-modal-header h2 {
+  margin: 0;
+  color: #f1edff;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.profile-close-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid rgba(115, 64, 170, 0.4);
+  background: rgba(14, 16, 38, 0.7);
+  color: #9f96c4;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.profile-close-button:hover {
+  background: rgba(255, 69, 101, 0.15);
+  border-color: rgba(255, 69, 101, 0.4);
+  color: #ff6c91;
+  transform: rotate(90deg);
+}
+
+/* =====================================================
+   HERO / IDENTITY BANNER
+   ===================================================== */
+
+.profile-hero-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  margin-bottom: 18px;
+  background: rgba(18, 15, 48, 0.6);
+  border: 1px solid rgba(141, 79, 214, 0.3);
+  border-radius: 12px;
+  box-shadow: inset 0 0 16px rgba(100, 36, 255, 0.1);
+}
+
+.profile-avatar-large {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(123, 60, 255, 0.35), rgba(0, 242, 254, 0.2));
+  border: 2px solid #8b4dff;
+  box-shadow: 0 0 16px rgba(139, 77, 255, 0.45);
+  color: #e8e6ff;
+  flex-shrink: 0;
+}
+
+.profile-hero-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.profile-member-name {
+  margin: 0;
+  color: #ffffff;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-member-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #b5a9dd;
+  font-family: Rajdhani, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* =====================================================
+   DETAILS LIST
+   ===================================================== */
+
+.profile-details-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.profile-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  background: rgba(9, 11, 28, 0.7);
+  border: 1px solid #232247;
+  border-radius: 10px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.profile-detail-item:hover {
+  border-color: rgba(123, 60, 255, 0.45);
+  background: rgba(15, 18, 44, 0.8);
+}
+
+.profile-detail-item.highlight-item {
+  border-color: rgba(0, 242, 254, 0.35);
+  background: rgba(0, 242, 254, 0.04);
+}
+
+.profile-detail-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: rgba(123, 60, 255, 0.15);
+  border: 1px solid rgba(123, 60, 255, 0.3);
+  color: #00f2fe;
+  flex-shrink: 0;
+}
+
+.highlight-item .profile-detail-icon-wrap {
+  color: #00f2fe;
+  background: rgba(0, 242, 254, 0.12);
+  border-color: rgba(0, 242, 254, 0.35);
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+}
+
+.profile-detail-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+
+.profile-detail-text label {
+  color: #8c85ad;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.profile-detail-text strong {
+  color: #eee9ff;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.subsystem-pill {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, rgba(0, 242, 254, 0.12), rgba(139, 77, 255, 0.15));
+  border: 1px solid rgba(0, 242, 254, 0.45);
+  color: #38e8ff;
+  font-family: Rajdhani, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.15);
+}
+
+/* =====================================================
+   FOOTER / ACTIONS
+   ===================================================== */
+
+.profile-modal-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-logout-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 16px;
+  background: linear-gradient(135deg, rgba(255, 69, 101, 0.15), rgba(180, 20, 50, 0.25));
+  border: 1px solid #ff4565;
+  border-radius: 8px;
+  color: #ff758f;
+  font-family: Rajdhani, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(255, 69, 101, 0.15);
+}
+
+.profile-logout-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(255, 69, 101, 0.35), rgba(200, 30, 65, 0.5));
+  border-color: #ff6c91;
+  color: #ffffff;
+  box-shadow: 0 0 22px rgba(255, 69, 101, 0.45);
+  transform: translateY(-1px);
+}
+
+.profile-logout-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.profile-logout-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .profile-modal-card {
+    padding: 18px 16px;
+  }
+  .profile-hero-banner {
+    padding: 12px;
+  }
+  .profile-avatar-large {
+    width: 46px;
+    height: 46px;
+  }
+  .profile-member-name {
+    font-size: 16px;
+  }
+}

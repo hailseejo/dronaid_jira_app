@@ -1,0 +1,219 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.signup-container {
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #05040a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  color: #ffffff;
+}
+
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+.glow-left, .glow-right {
+  position: absolute;
+  width: 450px;
+  height: 450px;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.15;
+  pointer-events: none;
+}
+.glow-left { background: #6366f1; top: 15%; left: 8%; }
+.glow-right { background: #a855f7; bottom: 15%; right: 8%; }
+
+.hud-overlay {
+  position: absolute;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+  color: #6b7280;
+  letter-spacing: 1px;
+  line-height: 1.8;
+  pointer-events: none;
+}
+.hud-left { top: 180px; left: 40px; }
+.hud-right { top: 180px; right: 40px; text-align: right; }
+.hud-label { color: #4b5563; }
+
+.signup-card {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(13, 12, 22, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 32px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+}
+
+.back-nav {
+  margin-bottom: 12px;
+}
+.back-button {
+  color: #6b7280;
+  font-size: 12px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.back-button:hover {
+  color: #00f2fe;
+}
+
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.logo-text {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  color: #ffffff;
+  margin-top: 4px;
+}
+.highlight-o { color: #00f2fe; }
+
+.signup-header {
+  margin-bottom: 20px;
+}
+.signup-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+}
+.signup-header p {
+  font-size: 13px;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+.error-badge {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.form-group label {
+  font-size: 12px;
+  color: #d1d5db;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-icon {
+  position: absolute;
+  left: 14px;
+  color: #6b7280;
+  display: flex;
+}
+.input-wrapper input,
+.input-wrapper select {
+  width: 100%;
+  padding: 12px 14px 12px 42px;
+  background: rgba(18, 16, 31, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+.input-wrapper select {
+  appearance: none;
+  cursor: pointer;
+}
+.input-wrapper select option {
+  background: #12101f;
+  color: #ffffff;
+}
+.input-wrapper input:focus,
+.input-wrapper select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+}
+
+.eye-btn {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+}
+
+.submit-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+}
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.submit-btn:not(:disabled):hover { opacity: 0.95; }
+.submit-btn:not(:disabled):active { transform: scale(0.99); }
+
+.login-footer {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 12px;
+  color: #9ca3af;
+}
+.login-footer a {
+  color: #00f2fe;
+  text-decoration: none;
+  margin-left: 4px;
+}
+.login-footer a:hover {
+  text-decoration: underline;
+}
