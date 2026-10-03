@@ -323,6 +323,86 @@ export const subscribeToCalendarTasks = (onNext, onError) => {
 };
 
 // =====================================================
+// FINANCE WORKBOOKS
+// =====================================================
+
+export const subscribeToFinanceWorkbooks = (onNext, onError) => {
+  return onSnapshot(
+    collection(db, "financeWorkbooks"),
+    (snap) => {
+      const workbooks = snap.docs.map((workbookDoc) => ({
+        id: workbookDoc.id,
+        ...workbookDoc.data(),
+        sheets: Array.isArray(workbookDoc.data().sheets)
+          ? workbookDoc.data().sheets.map((sheet) => ({
+              ...sheet,
+              prNumber: sheet.prNumber || "",
+              paisId: sheet.paisId || "",
+              rows: typeof sheet.rowsJson === "string" ? JSON.parse(sheet.rowsJson) : [],
+            }))
+          : [],
+      }));
+
+      workbooks.sort(
+        (first, second) => (second.createdAt?.toMillis?.() || 0) - (first.createdAt?.toMillis?.() || 0)
+      );
+      onNext(workbooks);
+    },
+    onError
+  );
+};
+
+export const createFinanceWorkbook = ({ fileName, sheets, createdBy }) =>
+  addDoc(collection(db, "financeWorkbooks"), {
+    fileName,
+    sheets: sheets.map((sheet) => ({
+      name: sheet.name,
+      headers: sheet.headers,
+      prNumber: sheet.prNumber || "",
+      paisId: sheet.paisId || "",
+      prStatus: Boolean(sheet.prStatus),
+      prSent: Boolean(sheet.prSent),
+      prApprovedByFa: Boolean(sheet.prApprovedByFa),
+      prNumberGenerated: Boolean(sheet.prNumberGenerated),
+      rowsJson: JSON.stringify(sheet.rows),
+    })),
+    createdBy,
+    createdAt: serverTimestamp(),
+  });
+
+export const deleteFinanceWorkbook = (workbookId) =>
+  deleteDoc(doc(db, "financeWorkbooks", workbookId));
+
+export const updateFinanceWorkbookSheets = (workbookId, sheets) =>
+  updateDoc(doc(db, "financeWorkbooks", workbookId), {
+    sheets: sheets.map((sheet) => ({
+      name: sheet.name,
+      headers: sheet.headers,
+      prNumber: sheet.prNumber || "",
+      paisId: sheet.paisId || "",
+      prStatus: Boolean(sheet.prStatus),
+      prSent: Boolean(sheet.prSent),
+      prApprovedByFa: Boolean(sheet.prApprovedByFa),
+      prNumberGenerated: Boolean(sheet.prNumberGenerated),
+      rowsJson: JSON.stringify(sheet.rows || []),
+    })),
+  });
+
+export const subscribeToFinanceAnalytics = (onNext, onError) =>
+  onSnapshot(doc(db, "financeAnalytics", "summary"), (snapshot) => onNext(snapshot.exists() ? snapshot.data() : {}), onError);
+
+export const saveFinanceAnalytics = ({ budget, prRaisedAmount, amountActuallySpent, seedMoney, balance, remarks }) =>
+  setDoc(doc(db, "financeAnalytics", "summary"), {
+    budget,
+    prRaisedAmount,
+    amountActuallySpent,
+    seedMoney,
+    balance,
+    remarks,
+    updatedAt: serverTimestamp(),
+  });
+
+// =====================================================
 // ANNOUNCEMENTS (Dashboard widget and Announcements page)
 // =====================================================
 
