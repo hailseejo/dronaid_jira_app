@@ -1,0 +1,216 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // NOTE: this costs one extra document read per rule evaluation. Fine at
+    // this project's scale; worth knowing if usage grows a lot.
+    function myProfile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && myProfile().role in ["Admin", "EB"];
+    }
+
+    function isEB() {
+      return isSignedIn() && myProfile().role == "EB";
+    }
+
+    function canAccessFinance() {
+      return isEB() || (isSignedIn() && myProfile().financeAccess == true);
+    }
+
+    function isSubsystemHead() {
+      return isSignedIn() && myProfile().hierarchyTier == "Subsystem Heads";
+    }
+
+    function isMahek() {
+      return isSignedIn() &&
+        myProfile().email == "mahekg819@gmail.com" &&
+        myProfile().hierarchyTier == "Subsystem Heads";
+    }
+
+    function canManageSubsystem(subsystem) {
+      return myProfile().subsystem == subsystem ||
+        (myProfile().managedSubsystems is list && subsystem in myProfile().managedSubsystems) ||
+        (isMahek() && subsystem == "Software");
+    }
+
+    function managesSubsystem(subsystem) {
+      return myProfile().subsystem == subsystem ||
+        (myProfile().managedSubsystems is list && subsystem in myProfile().managedSubsystems) ||
+        (isMahek() && subsystem == "Software");
+    }
+
+    function canManageTasks(subsystem) {
+      return isEB() || (isSubsystemHead() && managesSubsystem(subsystem));
+    }
+
+    function mySubsystem() {
+      return myProfile().subsystem;
+    }
+
+    // Keep this list in sync with src/constants/subsystems.js.
+    function isValidSubsystem(value) {
+      return value in [
+        "AI and Automation",
+        "Software",
+        "MAD",
+        "Electronics",
+        "Management",
+        "Research"
+      ];
+    }
+
+    match /users/{userId} {
+      // Read your own doc, any doc in your own subsystem, or (Admin) any doc.
+      allow read: if isSignedIn() && (
+        userId == request.auth.uid ||
+        isAdmin() ||
+        resource.data.subsystem == mySubsystem() ||
+        (
+          myProfile().hierarchyTier == "Subsystem Heads" &&
+          canManageSubsystem(resource.data.subsystem)
+        )
+      );
+
+      // Self-service signup: members need a valid subsystem. EB signup also
+      // requires the portal authorization code before creating an EB doc.
+      allow create: if isSignedIn()
+        && (
+          (
+            request.resource.data.role == "Member" &&
+            isValidSubsystem(request.resource.data.subsystem) &&
+            (
+              request.auth.uid == userId ||
+              isAdmin()
+            )
+          ) ||
+          (
+            request.auth.uid == userId &&
+            request.resource.data.role == "EB" &&
+            request.resource.data.subsystem == "Management" &&
+            request.resource.data.ebAuthorizationCode == "4567"
+          )
+        );
+
+      // A user may update their own doc, but never their own role or
+      // subsystem (prevents Member -> Admin / Software -> MAD self-edits).
+      // An Admin may update anyone's doc, including role/subsystem.
+      allow update: if isSignedIn() && (
+        isAdmin() ||
+        (
+          request.auth.uid == userId &&
+          request.resource.data.role == resource.data.role &&
+          request.resource.data.subsystem == resource.data.subsystem
+        )
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    match /tasks/{taskId} {
+      allow read: if isSignedIn() && (
+        isAdmin() ||
+        (resource.data.subsystem == mySubsystem() && resource.data.status == "Ongoing") ||
+        (
+          myProfile().hierarchyTier == "Subsystem Heads" &&
+          canManageSubsystem(resource.data.subsystem)
+        ) ||
+        resource.data.assignedTo == request.auth.uid ||
+        resource.data.createdBy == request.auth.uid
+      );
+
+      // subsystem and createdBy must match the caller's own authenticated
+      // profile — never a value handed in from a form.
+      allow create: if canManageTasks(request.resource.data.subsystem)
+        && request.resource.data.createdBy == request.auth.uid;
+
+      allow update, delete: if canManageTasks(resource.data.subsystem);
+    }
+
+    match /announcements/{announcementId} {
+      allow read: if isSignedIn();
+      allow create: if (
+        isEB() ||
+        (
+          myProfile().hierarchyTier == "Subsystem Heads" &&
+          managesSubsystem(request.resource.data.subsystem)
+        )
+      )
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.createdAt == request.time;
+      allow delete: if isEB() ||
+        (
+          myProfile().hierarchyTier == "Subsystem Heads" &&
+          (
+            resource.data.subsystem == null ||
+            managesSubsystem(resource.data.subsystem)
+          )
+        );
+      allow update: if false;
+    }
+
+    match /competitions/{competitionId} {
+      allow read: if isSignedIn();
+      allow create: if isAdmin()
+        && request.resource.data.createdBy == request.auth.uid;
+      allow delete: if isAdmin();
+      allow update: if false;
+    }
+
+    match /competitionChecklistTasks/{taskId} {
+      allow read: if isSignedIn();
+      allow create: if isAdmin()
+        && request.resource.data.createdBy == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    match /calendarTasks/{taskId} {
+      allow read: if isSignedIn();
+      allow create: if (
+        (
+          isEB() ||
+          (
+            request.resource.data.subsystem is string &&
+            canManageTasks(request.resource.data.subsystem)
+          )
+        ) &&
+        request.resource.data.createdBy == request.auth.uid
+      );
+      allow delete: if isEB() || (
+          resource.data.subsystem is string &&
+          canManageTasks(resource.data.subsystem)
+        );
+      allow update: if false;
+    }
+
+    match /financeWorkbooks/{workbookId} {
+      allow read: if canAccessFinance();
+      allow create: if canAccessFinance() &&
+        request.resource.data.createdBy == request.auth.uid &&
+        request.resource.data.fileName is string &&
+        request.resource.data.sheets is list &&
+        request.resource.data.sheets.size() > 0;
+      allow delete: if canAccessFinance();
+      allow update: if canAccessFinance() &&
+        request.resource.data.createdBy == resource.data.createdBy &&
+        request.resource.data.fileName == resource.data.fileName &&
+        request.resource.data.sheets is list &&
+        request.resource.data.sheets.size() > 0;
+    }
+
+    match /financeAnalytics/{analyticsId} {
+      allow read: if canAccessFinance();
+      allow create, update: if canAccessFinance();
+      allow delete: if canAccessFinance();
+    }
+  }
+}

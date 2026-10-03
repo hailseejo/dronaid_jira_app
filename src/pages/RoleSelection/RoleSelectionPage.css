@@ -1,0 +1,128 @@
+.role-selection-container {
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #05040a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  color: #ffffff;
+}
+
+.role-selection-card {
+  width: 100%;
+  max-width: 460px;
+  padding: 40px 32px;
+  background: rgba(13, 12, 22, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+}
+
+.role-logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.role-logo-text {
+  margin: 4px 0 0;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 3px;
+}
+
+.role-selection-header {
+  margin-bottom: 24px;
+}
+
+.role-eyebrow {
+  margin-bottom: 10px;
+  color: #00f2fe;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+
+.role-selection-header h2 {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.role-selection-header > p:last-child {
+  margin-top: 5px;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.role-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.role-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 74px;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(18, 16, 31, 0.8);
+  color: #ffffff;
+  text-decoration: none;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.role-option:hover,
+.role-option:focus-visible {
+  border-color: #00f2fe;
+  background: rgba(0, 242, 254, 0.08);
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.role-option-primary {
+  border-color: rgba(99, 102, 241, 0.65);
+  background: linear-gradient(90deg, rgba(79, 70, 229, 0.32), rgba(124, 58, 237, 0.22));
+}
+
+.role-option strong,
+.role-option small {
+  display: block;
+  text-align: left;
+}
+
+.role-option strong {
+  font-size: 14px;
+  letter-spacing: 0.2px;
+}
+
+.role-option small {
+  margin-top: 4px;
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+.role-arrow {
+  color: #00f2fe;
+  font-size: 21px;
+}
+
+@media (max-width: 600px) {
+  .role-selection-card {
+    width: calc(100% - 32px);
+    padding: 32px 24px;
+  }
+
+  .hud-overlay {
+    display: none;
+  }
+}
