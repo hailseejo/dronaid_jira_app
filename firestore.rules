@@ -187,5 +187,26 @@ service cloud.firestore {
         );
       allow update: if false;
     }
+
+    match /financeWorkbooks/{workbookId} {
+      allow read: if isEB();
+      allow create: if isEB() &&
+        request.resource.data.createdBy == request.auth.uid &&
+        request.resource.data.fileName is string &&
+        request.resource.data.sheets is list &&
+        request.resource.data.sheets.size() > 0;
+      allow delete: if isEB();
+      allow update: if isEB() &&
+        request.resource.data.createdBy == resource.data.createdBy &&
+        request.resource.data.fileName == resource.data.fileName &&
+        request.resource.data.sheets is list &&
+        request.resource.data.sheets.size() > 0;
+    }
+
+    match /financeAnalytics/{analyticsId} {
+      allow read: if isEB();
+      allow create, update: if isEB();
+      allow delete: if isEB();
+    }
   }
 }

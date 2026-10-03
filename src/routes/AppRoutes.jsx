@@ -5,6 +5,8 @@ import RoleSelectionPage from "../pages/RoleSelection/RoleSelectionPage";
 import ExecutiveBoardPage from "../pages/ExecutiveBoard/ExecutiveBoardPage";
 import ExecutiveBoardMembersPage from "../pages/ExecutiveBoardMembers/ExecutiveBoardMembersPage";
 import ExecutiveBoardMemberSignupPage from "../pages/ExecutiveBoardMemberSignup/ExecutiveBoardMemberSignupPage";
+import ExecutiveBoardFinancePage from "../pages/ExecutiveBoardFinance/ExecutiveBoardFinancePage";
+import ExecutiveBoardFinanceAnalyticsPage from "../pages/ExecutiveBoardFinanceAnalytics/ExecutiveBoardFinanceAnalyticsPage";
 import SignUpPage from "../pages/SignUp/SignUpPage";
 
 import Dashboard from "../components/dashboard/Dashboard";
@@ -55,6 +57,24 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute requireEb>
               <ExecutiveBoardMemberSignupPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/executive-board/finance"
+          element={
+            <ProtectedRoute requireEb>
+              <ExecutiveBoardFinancePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/executive-board/finance/analytics"
+          element={
+            <ProtectedRoute requireEb>
+              <ExecutiveBoardFinanceAnalyticsPage />
             </ProtectedRoute>
           }
         />
